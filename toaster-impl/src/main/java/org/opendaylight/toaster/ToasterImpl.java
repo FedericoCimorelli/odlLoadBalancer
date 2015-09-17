@@ -3,7 +3,6 @@ package org.opendaylight.toaster;
 // !!! NOTE: The imports must be in this order, or checkstyle will not pass!!!
 // In Eclipse, use CONTROL+SHIFT+o or CMD+SHIFT+o (mac) to properly order imports
 
-// 3rd party imports
 import com.google.common.base.Function;
 import com.google.common.base.Optional;
 import com.google.common.util.concurrent.AsyncFunction;
@@ -12,6 +11,8 @@ import com.google.common.util.concurrent.Futures;
 import com.google.common.util.concurrent.ListenableFuture;
 import com.google.common.util.concurrent.SettableFuture;
 
+
+// 3rd party imports
 import java.util.concurrent.Callable;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -33,20 +34,18 @@ import org.opendaylight.controller.sal.binding.api.BindingAwareBroker.ProviderCo
 import org.opendaylight.controller.sal.binding.api.BindingAwareBroker.RpcRegistration;
 import org.opendaylight.controller.sal.binding.api.BindingAwareProvider;
 import org.opendaylight.controller.sal.binding.api.NotificationProviderService;
-
+import org.opendaylight.yang.gen.v1.http.netconfcentral.org.ns.loadbalancer.rev091120.DisplayString;
+import org.opendaylight.yang.gen.v1.http.netconfcentral.org.ns.loadbalancer.rev091120.Loadbalancer;
+import org.opendaylight.yang.gen.v1.http.netconfcentral.org.ns.loadbalancer.rev091120.Loadbalancer.LoadbalancerStatus;
+import org.opendaylight.yang.gen.v1.http.netconfcentral.org.ns.loadbalancer.rev091120.LoadbalancerBuilder;
+import org.opendaylight.yang.gen.v1.http.netconfcentral.org.ns.loadbalancer.rev091120.LoadbalancerOutOfBreadBuilder;
+import org.opendaylight.yang.gen.v1.http.netconfcentral.org.ns.loadbalancer.rev091120.LoadbalancerRestocked;
+import org.opendaylight.yang.gen.v1.http.netconfcentral.org.ns.loadbalancer.rev091120.LoadbalancerRestockedBuilder;
 // Interfaces generated from the toaster yang model
-import org.opendaylight.yang.gen.v1.http.netconfcentral.org.ns.toaster.rev091120.DisplayString;
-import org.opendaylight.yang.gen.v1.http.netconfcentral.org.ns.toaster.rev091120.MakeToastInput;
-import org.opendaylight.yang.gen.v1.http.netconfcentral.org.ns.toaster.rev091120.RestockToasterInput;
-import org.opendaylight.yang.gen.v1.http.netconfcentral.org.ns.toaster.rev091120.Toaster;
-import org.opendaylight.yang.gen.v1.http.netconfcentral.org.ns.toaster.rev091120.Toaster.ToasterStatus;
-import org.opendaylight.yang.gen.v1.http.netconfcentral.org.ns.toaster.rev091120.ToasterBuilder;
-import org.opendaylight.yang.gen.v1.http.netconfcentral.org.ns.toaster.rev091120.ToasterOutOfBreadBuilder;
-import org.opendaylight.yang.gen.v1.http.netconfcentral.org.ns.toaster.rev091120.ToasterRestocked;
-import org.opendaylight.yang.gen.v1.http.netconfcentral.org.ns.toaster.rev091120.ToasterRestockedBuilder;
-import org.opendaylight.yang.gen.v1.http.netconfcentral.org.ns.toaster.rev091120.ToasterService;
+import org.opendaylight.yang.gen.v1.http.netconfcentral.org.ns.loadbalancer.rev091120.LoadbalancerService;
+import org.opendaylight.yang.gen.v1.http.netconfcentral.org.ns.loadbalancer.rev091120.MakeToastInput;
+import org.opendaylight.yang.gen.v1.http.netconfcentral.org.ns.loadbalancer.rev091120.RestockLoadbalancerInput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.toaster.impl.config.rev141210.ToasterImplRuntimeMXBean;
-
 // Yangtools methods to manipulate RPC DTOs
 import org.opendaylight.yangtools.concepts.ListenerRegistration;
 import org.opendaylight.yangtools.yang.binding.DataObject;
@@ -60,7 +59,8 @@ import org.slf4j.LoggerFactory;
 
 
 
-public class ToasterImpl implements BindingAwareProvider, ToasterService, DataChangeListener, ToasterImplRuntimeMXBean, AutoCloseable {
+
+public class ToasterImpl implements BindingAwareProvider, LoadbalancerService, DataChangeListener, ToasterImplRuntimeMXBean, AutoCloseable {
     private static final Logger LOG = LoggerFactory.getLogger(ToasterImpl.class);
 
     private ProviderContext providerContext;
@@ -68,12 +68,12 @@ public class ToasterImpl implements BindingAwareProvider, ToasterService, DataCh
     private NotificationProviderService notificationService;
     private DataBroker dataService;
 
-    private RpcRegistration<ToasterService> rpcReg;
+    private RpcRegistration<LoadbalancerService> rpcReg;
     private ListenerRegistration<DataChangeListener> dcReg;
 
-    public static final InstanceIdentifier<Toaster> TOASTER_IID = InstanceIdentifier.builder(Toaster.class).build();
-    private static final DisplayString TOASTER_MANUFACTURER = new DisplayString("Opendaylight");
-    private static final DisplayString TOASTER_MODEL_NUMBER = new DisplayString("Model 1 - Binding Aware");
+    public static final InstanceIdentifier<Loadbalancer> LOADBALANCER_IID = InstanceIdentifier.builder(Loadbalancer.class).build();
+    private static final DisplayString LOADBALANCER_MANUFACTURER = new DisplayString("Opendaylight Load Balancer");
+    private static final DisplayString LOADBALANCER_MODEL_NUMBER = new DisplayString("Model 1 - Binding Aware");
 
     private final ExecutorService executor;
 
@@ -108,16 +108,16 @@ public class ToasterImpl implements BindingAwareProvider, ToasterService, DataCh
 
         // Delete toaster operational data from the MD-SAL data store
         WriteTransaction tx = dataService.newWriteOnlyTransaction();
-        tx.delete(LogicalDatastoreType.OPERATIONAL,TOASTER_IID);
+        tx.delete(LogicalDatastoreType.OPERATIONAL,LOADBALANCER_IID);
         Futures.addCallback( tx.submit(), new FutureCallback<Void>() {
             @Override
             public void onSuccess( final Void result ) {
-                LOG.debug( "Delete Toaster commit result: {}", result );
+                LOG.debug( "Delete Loadbalancer commit result: {}", result );
             }
 
             @Override
             public void onFailure( final Throwable t ) {
-                LOG.error( "Delete of Toaster failed", t );
+                LOG.error( "Delete of Loadbalancer failed", t );
             }
         } );
 
@@ -125,7 +125,7 @@ public class ToasterImpl implements BindingAwareProvider, ToasterService, DataCh
         rpcReg.close();
         dcReg.close();
 
-        LOG.info("ToasterImpl: registrations closed");
+        LOG.info("LoadbalancerImpl: registrations closed");
     }
 
     /**************************************************************************
@@ -138,18 +138,17 @@ public class ToasterImpl implements BindingAwareProvider, ToasterService, DataCh
         this.dataService = session.getSALService(DataBroker.class);
 
         // Register the RPC Service
-        rpcReg = session.addRpcImplementation(ToasterService.class, this);
+        rpcReg = session.addRpcImplementation(LoadbalancerService.class, this);
 
         // Register the DataChangeListener for Toaster's configuration subtree
         dcReg = dataService.registerDataChangeListener( LogicalDatastoreType.CONFIGURATION,
-                                                        TOASTER_IID,
+                                                        LOADBALANCER_IID,
                                                         this,
                                                         DataChangeScope.SUBTREE );
 
         // Initialize operational and default config data in MD-SAL data store
-        initToasterOperational();
-        initToasterConfiguration();
-
+        initLoadbalancerOperational();
+        initLoadbalancerConfiguration();
         LOG.info("onSessionInitiated: initialization done");
     }
 
@@ -201,13 +200,12 @@ public class ToasterImpl implements BindingAwareProvider, ToasterService, DataCh
      * { "input" : { "toaster:amountOfBreadToStock" : "3" } }
      */
     @Override
-    public Future<RpcResult<java.lang.Void>> restockToaster(final RestockToasterInput input) {
-        LOG.info( "restockToaster: {}", input );
+    public Future<RpcResult<java.lang.Void>> restockLoadbalancer(final RestockLoadbalancerInput input) {
+        LOG.info( "restockLoadbalancer: {}", input );
         amountOfBreadInStock.set( input.getAmountOfBreadToStock() );
 
         if( amountOfBreadInStock.get() > 0 ) {
-            ToasterRestocked reStockedNotification = new ToasterRestockedBuilder()
-                .setAmountOfBread( input.getAmountOfBreadToStock() ).build();
+            LoadbalancerRestocked reStockedNotification = new LoadbalancerRestockedBuilder().setAmountOfBread( input.getAmountOfBreadToStock() ).build();
             notificationService.publish( reStockedNotification );
         }
         return Futures.immediateFuture( RpcResultBuilder.<Void> success().build() );
@@ -224,15 +222,15 @@ public class ToasterImpl implements BindingAwareProvider, ToasterService, DataCh
     @Override
     public void onDataChanged( final AsyncDataChangeEvent<InstanceIdentifier<?>, DataObject> change ) {
         DataObject dataObject = change.getUpdatedSubtree();
-        if( dataObject instanceof Toaster )
+        if( dataObject instanceof Loadbalancer )
         {
-            Toaster toaster = (Toaster) dataObject;
-            Long darkness = toaster.getDarknessFactor();
+            Loadbalancer loadbalancer = (Loadbalancer) dataObject;
+            Long darkness = loadbalancer.getDarknessFactor();
             if( darkness != null )
             {
                 darknessFactor.set( darkness );
             }
-            LOG.info("onDataChanged - new Toaster config: {}", toaster);
+            LOG.info("onDataChanged - new Loadbalancer config: {}", loadbalancer);
         }
     }
 
@@ -247,78 +245,78 @@ public class ToasterImpl implements BindingAwareProvider, ToasterService, DataCh
      * (embedded) into the hardware. / This is why the manufacture and model
      * number are hardcoded
      */
-    private void initToasterOperational() {
+    private void initLoadbalancerOperational() {
         // Build the initial toaster operational data
-        Toaster toaster = buildToaster(ToasterStatus.Up);
+        Loadbalancer loadbalancer = buildLoadbalancer(LoadbalancerStatus.Up);
 
         // Put the toaster operational data into the MD-SAL data store
         WriteTransaction tx = dataService.newWriteOnlyTransaction();
-        tx.put(LogicalDatastoreType.OPERATIONAL, TOASTER_IID, toaster);
+        tx.put(LogicalDatastoreType.OPERATIONAL, LOADBALANCER_IID, loadbalancer);
 
         Futures.addCallback(tx.submit(), new FutureCallback<Void>() {
             @Override
             public void onSuccess(final Void result) {
-                LOG.info("initToasterOperational: transaction succeeded");
+                LOG.info("initLoadbalancerOperational: transaction succeeded");
             }
 
             @Override
             public void onFailure(final Throwable t) {
-                LOG.error("initToasterOperational: transaction failed");
+                LOG.error("initLoadbalancerOperational: transaction failed");
             }
         });
 
-        LOG.info("initToasterOperational: operational status populated: {}", toaster);
+        LOG.info("initLoadbalancerOperational: operational status populated: {}", loadbalancer);
     }
 
     /**
      * Populates toaster's default config data into the MD-SAL configuration
      * data store.
      */
-    private void initToasterConfiguration() {
+    private void initLoadbalancerConfiguration() {
         // Build the default toaster config data
-        Toaster toaster = new ToasterBuilder().setDarknessFactor(darknessFactor.get())
+        Loadbalancer loadbalancer = new LoadbalancerBuilder().setDarknessFactor(darknessFactor.get())
                 .build();
 
         // Place default config data in data store tree
         WriteTransaction tx = dataService.newWriteOnlyTransaction();
-        tx.put(LogicalDatastoreType.CONFIGURATION, TOASTER_IID, toaster);
+        tx.put(LogicalDatastoreType.CONFIGURATION, LOADBALANCER_IID, loadbalancer);
 
         Futures.addCallback(tx.submit(), new FutureCallback<Void>() {
             @Override
             public void onSuccess(final Void result) {
-                LOG.info("initToasterConfiguration: transaction succeeded");
+                LOG.info("initLoadbalancerConfiguration: transaction succeeded");
             }
 
             @Override
             public void onFailure(final Throwable t) {
-                LOG.error("initToasterConfiguration: transaction failed");
+                LOG.error("initLoadbalancerConfiguration: transaction failed");
             }
         });
 
-        LOG.info("initToasterConfiguration: default config populated: {}", toaster);
+        LOG.info("initLoadbalancerConfiguration: default config populated: {}", loadbalancer);
     }
 
-    private RpcError makeToasterOutOfBreadError() {
+    private RpcError makeLoadbalancerOutOfBreadError() {
         return RpcResultBuilder.newError( ErrorType.APPLICATION, "resource-denied",
-                "Toaster is out of bread", "out-of-stock", null, null );
+                "Loadbalancer is out of bread", "out-of-stock", null, null );
     }
 
-    private RpcError makeToasterInUseError() {
+    private RpcError makeLoadbalancerInUseError() {
         return RpcResultBuilder.newWarning( ErrorType.APPLICATION, "in-use",
-                "Toaster is busy", null, null, null );
+                "Loadbalancer is busy", null, null, null );
     }
 
-    private Toaster buildToaster( final ToasterStatus status ) {
-        return new ToasterBuilder().setToasterManufacturer( TOASTER_MANUFACTURER )
-                                   .setToasterModelNumber( TOASTER_MODEL_NUMBER )
-                                   .setToasterStatus( status )
+    private Loadbalancer buildLoadbalancer( final LoadbalancerStatus status ) {
+        return new LoadbalancerBuilder().setLoadbalancerManufacturer( LOADBALANCER_MANUFACTURER )
+                                   .setLoadbalancerModelNumber( LOADBALANCER_MODEL_NUMBER )
+                                   .setLoadbalancerStatus( status )
                                    .build();
     }
 
-    private void setToasterStatusUp( final Function<Boolean,Void> resultCallback ) {
+    private void setLoadbalancerStatusUp( final Function<Boolean,Void> resultCallback ) {
 
         WriteTransaction tx = dataService.newWriteOnlyTransaction();
-        tx.put( LogicalDatastoreType.OPERATIONAL,TOASTER_IID, buildToaster( ToasterStatus.Up ) );
+        tx.put( LogicalDatastoreType.OPERATIONAL,LOADBALANCER_IID, buildLoadbalancer( LoadbalancerStatus.Up ) );
 
         Futures.addCallback( tx.submit(), new FutureCallback<Void>() {
             @Override
@@ -330,7 +328,7 @@ public class ToasterImpl implements BindingAwareProvider, ToasterService, DataCh
             public void onFailure( final Throwable t ) {
                 // We shouldn't get an OptimisticLockFailedException (or any ex) as no
                 // other component should be updating the operational state.
-                LOG.error( "Failed to update toaster status", t );
+                LOG.error( "Failed to update  status", t );
 
                 notifyCallback( false );
             }
@@ -359,37 +357,37 @@ public class ToasterImpl implements BindingAwareProvider, ToasterService, DataCh
         LOG.info( "checkStatusAndMakeToast");
 
         final ReadWriteTransaction tx = dataService.newReadWriteTransaction();
-        ListenableFuture<Optional<Toaster>> readFuture =
-            tx.read( LogicalDatastoreType.OPERATIONAL, TOASTER_IID );
+        ListenableFuture<Optional<Loadbalancer>> readFuture =
+            tx.read( LogicalDatastoreType.OPERATIONAL, LOADBALANCER_IID );
 
         final ListenableFuture<Void> commitFuture =
-            Futures.transform( readFuture, new AsyncFunction<Optional<Toaster>,Void>() {
+            Futures.transform( readFuture, new AsyncFunction<Optional<Loadbalancer>,Void>() {
 
                 @Override
                 public ListenableFuture<Void> apply(
-                        final Optional<Toaster> toasterData ) throws Exception {
+                        final Optional<Loadbalancer> loadbalancerData ) throws Exception {
 
-                    ToasterStatus toasterStatus = ToasterStatus.Up;
-                    if( toasterData.isPresent() ) {
-                        toasterStatus = toasterData.get().getToasterStatus();
+                    LoadbalancerStatus loadbalancerStatus = LoadbalancerStatus.Up;
+                    if( loadbalancerData.isPresent() ) {
+                        loadbalancerStatus = loadbalancerData.get().getLoadbalancerStatus();
                     }
 
-                    LOG.debug( "Read toaster status: {}", toasterStatus );
+                    LOG.debug( "Read Loadbalancer status: {}", loadbalancerStatus );
 
-                    if( toasterStatus == ToasterStatus.Up ) {
+                    if( loadbalancerStatus == LoadbalancerStatus.Up ) {
                         if( outOfBread() ) {
-                            LOG.debug( "Toaster is out of bread" );
+                            LOG.debug( "Loadbalancer is out of bread" );
                             return Futures.immediateFailedCheckedFuture(
-                                    new TransactionCommitFailedException( "", makeToasterOutOfBreadError() ) );
+                                    new TransactionCommitFailedException( "", makeLoadbalancerOutOfBreadError() ) );
                         }
 
-                        LOG.debug( "Setting Toaster status to Down" );
+                        LOG.debug( "Setting Loadbalancer status to Down" );
 
                         // We're not currently making toast - try to update the status to Down
                         // to indicate we're going to make toast. This acts as a lock to prevent
                         // concurrent toasting.
-                        tx.put( LogicalDatastoreType.OPERATIONAL, TOASTER_IID,
-                                buildToaster( ToasterStatus.Down ) );
+                        tx.put( LogicalDatastoreType.OPERATIONAL, LOADBALANCER_IID,
+                                buildLoadbalancer( LoadbalancerStatus.Down ) );
                         return tx.submit();
                     }
 
@@ -399,7 +397,7 @@ public class ToasterImpl implements BindingAwareProvider, ToasterService, DataCh
                     // propagated to the commitFuture below which will interpret the null
                     // TransactionStatus in the RpcResult as an error condition.
                     return Futures.immediateFailedCheckedFuture(
-                            new TransactionCommitFailedException( "", makeToasterInUseError() ) );
+                            new TransactionCommitFailedException( "", makeLoadbalancerInUseError() ) );
                 }
             } );
 
@@ -430,7 +428,7 @@ public class ToasterImpl implements BindingAwareProvider, ToasterService, DataCh
 
                 } else {
 
-                    LOG.debug( "Failed to commit Toaster status", ex );
+                    LOG.debug( "Failed to commit Loadbalancer status", ex );
 
                     // Probably already making toast.
                     futureResult.set( RpcResultBuilder.<Void> failed()
@@ -458,7 +456,7 @@ public class ToasterImpl implements BindingAwareProvider, ToasterService, DataCh
             {
                 // make toast just sleeps for n seconds per doneness level.
                 long darknessFactor = ToasterImpl.this.darknessFactor.get();
-                Thread.sleep(darknessFactor * toastRequest.getToasterDoneness());
+                Thread.sleep(darknessFactor * toastRequest.getLoadbalancerDoneness());
 
             }
             catch( InterruptedException e ) {
@@ -469,16 +467,16 @@ public class ToasterImpl implements BindingAwareProvider, ToasterService, DataCh
 
             amountOfBreadInStock.getAndDecrement();
             if( outOfBread() ) {
-                LOG.info( "Toaster is out of bread!" );
+                LOG.info( "Loadbalancer is out of bread!" );
 
-                notificationService.publish( new ToasterOutOfBreadBuilder().build() );
+                notificationService.publish( new LoadbalancerOutOfBreadBuilder().build() );
             }
 
             // Set the Toaster status back to up - this essentially releases the toasting lock.
             // We can't clear the current toast task nor set the Future result until the
             // update has been committed so we pass a callback to be notified on completion.
 
-            setToasterStatusUp( new Function<Boolean,Void>() {
+            setLoadbalancerStatusUp( new Function<Boolean,Void>() {
                 @Override
                 public Void apply( final Boolean result ) {
 
