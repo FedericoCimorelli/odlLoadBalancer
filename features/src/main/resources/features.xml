@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<features name="odl-toaster-${project.version}" xmlns="http://karaf.apache.org/xmlns/features/v1.2.0"
+<features name="odl-loadbalancer-${project.version}" xmlns="http://karaf.apache.org/xmlns/features/v1.2.0"
    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
    xsi:schemaLocation="http://karaf.apache.org/xmlns/features/v1.2.0 http://karaf.apache.org/xmlns/features/v1.2.0">
 
@@ -13,26 +13,26 @@
 
     <!-- TODO: for any feature dependencies, add an entry in the features/pom.xml dependency section -->
 
-    <feature name='odl-toaster-api' version='${project.version}' description='OpenDaylight :: toaster :: API'>
+    <feature name='odl-loadbalancer-api' version='${project.version}' description='OpenDaylight :: loadbalancer :: API'>
         <feature version='${yangtools.version}'>odl-yangtools-common</feature>
         <feature version='${yangtools.version}'>odl-yangtools-binding</feature>
         <feature version='${controller.restconf.version}'>odl-restconf</feature>
-        <bundle>mvn:org.opendaylight.toaster/toaster-api/${project.version}</bundle>
+        <bundle>mvn:org.opendaylight.loadbalancer/loadbalancer-api/${project.version}</bundle>
     </feature>
 
-    <feature name='odl-toaster-impl' version='${project.version}' description='OpenDaylight :: toaster :: Impl'>
+    <feature name='odl-loadbalancer-impl' version='${project.version}' description='OpenDaylight :: loadbalancer :: Impl'>
         <feature version='${controller.mdsal.version}'>odl-mdsal-broker</feature>
         <feature version='${controller.restconf.version}'>odl-restconf</feature>
-        <feature version='${project.version}'>odl-toaster-api</feature>
-        <bundle>mvn:org.opendaylight.toaster/toaster-impl/${project.version}</bundle>
-        <configfile finalname="toaster-impl-config.xml">mvn:org.opendaylight.toaster/toaster-impl/${project.version}/xml/config</configfile>
+        <feature version='${project.version}'>odl-loadbalancer-api</feature>
+        <bundle>mvn:org.opendaylight.loadbalancer/loadbalancer-impl/${project.version}</bundle>
+        <configfile finalname="loadbalancer-impl-config.xml">mvn:org.opendaylight.loadbalancer/loadbalancer-impl/${project.version}/xml/config</configfile>
     </feature>
 
-    <feature name='odl-toaster-consumer' version='${project.version}' description='OpenDaylight :: toaster :: Consumer'>
+    <feature name='odl-loadbalancer-consumer' version='${project.version}' description='OpenDaylight :: loadbalancer :: Consumer'>
         <feature version='${controller.mdsal.version}'>odl-mdsal-broker</feature>
         <feature version='${controller.restconf.version}'>odl-restconf</feature>
-        <feature version='${project.version}'>odl-toaster-api</feature>
-        <feature version='${project.version}'>odl-toaster-impl</feature>
-        <bundle>mvn:org.opendaylight.toaster/toaster-consumer/${project.version}</bundle>
+        <feature version='${project.version}'>odl-loadbalancer-api</feature>
+        <feature version='${project.version}'>odl-loadbalancer-impl</feature>
+        <bundle>mvn:org.opendaylight.loadbalancer/loadbalancer-consumer/${project.version}</bundle>
     </feature>
 </features>

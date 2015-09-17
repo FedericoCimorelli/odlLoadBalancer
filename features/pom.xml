@@ -10,13 +10,13 @@
    <modelVersion>4.0.0</modelVersion>
     <parent>
         <groupId>org.opendaylight.loadbalancer</groupId>
-        <artifactId>toaster-parent</artifactId>
+        <artifactId>loadbalancer-parent</artifactId>
         <relativePath>../parent</relativePath>
         <version>0.0.3-SNAPSHOT</version>
     </parent>
 
 
-    <artifactId>features-toaster</artifactId>
+    <artifactId>features-loadbalancer</artifactId>
     <name>${project.artifactId}</name>
 
     <!-- Optional TODO: Uncomment version if you are not using a parent pom.xml
@@ -74,11 +74,11 @@
     -->
        <dependency>
            <groupId>org.opendaylight.loadbalancer</groupId>
-           <artifactId>toaster-impl</artifactId>
+           <artifactId>loadbalancer-impl</artifactId>
        </dependency>
        <dependency>
            <groupId>org.opendaylight.loadbalancer</groupId>
-           <artifactId>toaster-consumer</artifactId>
+           <artifactId>loadbalancer-consumer</artifactId>
        </dependency>
 
     <!--
@@ -88,8 +88,8 @@
 
       Example (presuming here version is coming from the parent pom):
       <dependency>
-        <groupId>org.opendaylight.toaster</groupId>
-        <artifactId>toaster-config</artifactId>
+        <groupId>org.opendaylight.loadbalancer</groupId>
+        <artifactId>loadbalancer-config</artifactId>
         <type>xml</type>
         <classifier>config</classifier>
       </dependency>

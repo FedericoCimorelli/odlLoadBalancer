@@ -14,7 +14,7 @@
     <modelVersion>4.0.0</modelVersion>
 
     <groupId>org.opendaylight.loadbalancer</groupId>
-    <artifactId>toaster-artifacts</artifactId>
+    <artifactId>loadbalancer-artifacts</artifactId>
     <!-- MANDATORY TODO: This is CRUCIAL. This is the "REAL" project version. For now ensure that all other references
     to project version matches in pom.xmls match THIS ONE -->
     <version>0.0.3-SNAPSHOT</version>
@@ -30,17 +30,17 @@
             <!-- TODO: add add any new features here, these come from the <modules> section of the root pom.xml -->
             <dependency>
                 <groupId>${project.groupId}</groupId>
-                <artifactId>toaster-api</artifactId>
+                <artifactId>loadbalancer-api</artifactId>
                 <version>${project.version}</version>
             </dependency>
             <dependency>
                 <groupId>${project.groupId}</groupId>
-                <artifactId>toaster-impl</artifactId>
+                <artifactId>loadbalancer-impl</artifactId>
                 <version>${project.version}</version>
             </dependency>
             <dependency>
                 <groupId>${project.groupId}</groupId>
-                <artifactId>toaster-consumer</artifactId>
+                <artifactId>loadbalancer-consumer</artifactId>
                 <version>${project.version}</version>
             </dependency>
             <!-- Feature artifact. Please note the switch of "project-thing" to "thing-project" for features is
@@ -48,7 +48,7 @@
             -->
             <dependency>
                 <groupId>${project.groupId}</groupId>
-                <artifactId>features-toaster</artifactId>
+                <artifactId>features-loadbalancer</artifactId>
                 <classifier>features</classifier>
                 <type>xml</type>
                 <version>${project.version}</version>

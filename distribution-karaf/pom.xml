@@ -3,7 +3,7 @@
   <modelVersion>4.0.0</modelVersion>
     <parent>
         <groupId>org.opendaylight.loadbalancer</groupId>
-        <artifactId>toaster-parent</artifactId>
+        <artifactId>loadbalancer-parent</artifactId>
         <version>0.0.3-SNAPSHOT</version>
         <relativePath>../parent</relativePath>
     </parent>
@@ -79,15 +79,15 @@
       </dependency>
     -->
       <!--
-        The dependency here on the features-toaster tells karaf about the features.xml file which
+        The dependency here on the features-loadbalancer tells karaf about the features.xml file which
         has the list of dependencies on repos, bundles, config files, and other features.  All the
-        dependencies for the toaster need to be handled in the features.xml and the features/pom.xml
-        For instance, if the toaster needs restconf, then it will be listed in both the features.xml
+        dependencies for the loadbalancer need to be handled in the features.xml and the features/pom.xml
+        For instance, if the loadbalancer needs restconf, then it will be listed in both the features.xml
         and the features/pom.xml.  Note that mdsal is a dependency already listed in the features.xml
       -->
       <dependency>
           <groupId>org.opendaylight.loadbalancer</groupId>
-          <artifactId>features-toaster</artifactId>
+          <artifactId>features-loadbalancer</artifactId>
           <classifier>features</classifier>
           <type>xml</type>
           <scope>runtime</scope>
@@ -193,12 +193,12 @@
               -->
               <!-- this effectively does a feature:install in karaf -->
               <!--
-              <feature>odl-toaster-api</feature>
-              <feature>odl-toaster-impl</feature>
-              <feature>odl-toaster-consumer</feature>
+              <feature>odl-loadbalancer-api</feature>
+              <feature>odl-loadbalancer-impl</feature>
+              <feature>odl-loadbalancer-consumer</feature>
               -->
-              <feature>odl-toaster-api</feature>
-              <feature>odl-toaster-impl</feature>
+              <feature>odl-loadbalancer-api</feature>
+              <feature>odl-loadbalancer-impl</feature>
 
               <!-- Final TODO: Remove TODO Comments ;) -->
           </bootFeatures>
@@ -306,10 +306,10 @@
   </build>
   <!--
   <scm>
-    <connection>scm:git:ssh://git.opendaylight.org:29418/toaster.git</connection>
-    <developerConnection>scm:git:ssh://git.opendaylight.org:29418/toaster.git</developerConnection>
+    <connection>scm:git:ssh://git.opendaylight.org:29418/loadbalancer.git</connection>
+    <developerConnection>scm:git:ssh://git.opendaylight.org:29418/loadbalancer.git</developerConnection>
     <tag>HEAD</tag>
-    <url>https://git.opendaylight.org/gerrit/gitweb?p=toaster.git;a=summary</url>
+    <url>https://git.opendaylight.org/gerrit/gitweb?p=loadbalancer.git;a=summary</url>
   </scm>
   -->
 </project>

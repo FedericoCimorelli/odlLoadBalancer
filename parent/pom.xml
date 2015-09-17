@@ -28,7 +28,7 @@
     </parent>
 
     <groupId>org.opendaylight.loadbalancer</groupId>
-    <artifactId>toaster-parent</artifactId>
+    <artifactId>loadbalancer-parent</artifactId>
     <name>Toaster parent</name>
     <version>0.0.3-SNAPSHOT</version> <!-- Note using same version from Root pom.xml -->
     <packaging>pom</packaging> <!-- This line is very important, we aren't making any other side-effects
@@ -120,7 +120,7 @@
             <!-- This project -->
             <dependency>
                 <groupId>org.opendaylight.loadbalancer</groupId>
-                <artifactId>toaster-artifacts</artifactId> <!-- Reference to the artifacts/pom.xml -->
+                <artifactId>loadbalancer-artifacts</artifactId> <!-- Reference to the artifacts/pom.xml -->
                 <!-- INTERNAL TODO: Need to validate the below, rovarga *thinks* this
                     is fine but needs to noodle on it. -->
                 <version>${project.version}</version>

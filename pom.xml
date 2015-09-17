@@ -7,14 +7,14 @@
 
     <parent>
         <groupId>org.opendaylight.loadbalancer</groupId>
-        <artifactId>toaster-parent</artifactId>
+        <artifactId>loadbalancer-parent</artifactId>
         <version>0.0.3-SNAPSHOT</version>
         <relativePath>parent</relativePath>
     </parent>
 
     <!-- This is the root/top-level POM and from here we aggregate more modules -->
     <modelVersion>4.0.0</modelVersion>
-    <artifactId>toaster-aggregator</artifactId>
+    <artifactId>loadbalancer-aggregator</artifactId>
     <description>Toaster Tutorial Archetype Top Level POM</description>
     <packaging>pom</packaging>
     <name>${project.artifactId}</name>
@@ -45,9 +45,9 @@
         <module>artifacts</module>
 
         <!-- TODO: add new features here -->
-        <module>toaster-impl</module>
-        <module>toaster-api</module>
-        <module>toaster-consumer</module>
+        <module>loadbalancer-impl</module>
+        <module>loadbalancer-api</module>
+        <module>loadbalancer-consumer</module>
 
         <module>features</module>  <!-- see the features/pom.xml and features/src/main/resources/features.xml -->
         <module>distribution-karaf</module> <!-- a local karaf distribution with your features is built here -->
