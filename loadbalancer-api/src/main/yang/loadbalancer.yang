@@ -1,0 +1,82 @@
+module loadbalancer {
+
+    yang-version 1;
+
+    namespace
+      "http://netconfcentral.org/ns/loadbalancer";
+
+    prefix lb;
+
+    organization "Netconf Central";
+
+    contact
+      "Federico Cimorelli <cimorelli@dis.uniroma1.it>";
+
+    description
+      "YANG version of the ODL LOADBALANCER.";
+
+    revision "2015-09-01" {
+      description
+        "OpenDaylight Loadbalancer module.";
+    }
+
+
+    identity lb-type {
+      description
+        "Base for all bread types supported by the loadbalancer.
+           New bread types not listed here nay be added in the
+           future.";
+    }
+
+
+    container loadbalancer {
+      presence
+        "Indicates the loadbalancer service is available";
+      description
+        "Top-level container for all loadbalancer database objects.";
+
+      leaf loadbalancerStatus {
+        type enumeration {
+          enum "up" {
+            value 1;
+            description
+              "The loadbalancer knob position is up.
+                      No lb is being made now.";
+          }
+          enum "down" {
+            value 2;
+            description
+              "The loadbalancer knob position is down.
+                      Toast is being made now.";
+          }
+        }
+        config false;
+        mandatory true;
+        description
+          "This variable indicates the current state of
+               the loadbalancer.";
+      }
+
+      leaf darknessFactor {
+        type uint32;
+        config true;
+        default 1000;
+        description
+          "The darkness factor. Basically, the number of ms to multiple the doneness value by.";
+      }
+    }  // container loadbalancer
+
+
+
+    rpc start-loadbalancer{
+        description "Start loadbalancer algorithm";
+        input {
+            leaf loadbalancerInputParamOne{
+                type uint32;
+                description "Loadbalancer first input parameter";
+                default 100;
+                }
+            }
+        }
+
+  }  // module loadbalancer

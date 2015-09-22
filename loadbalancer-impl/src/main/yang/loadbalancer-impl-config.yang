@@ -1,0 +1,65 @@
+module loadbalancer-impl-config {
+    yang-version 1;
+    namespace "urn:opendaylight:params:xml:ns:yang:loadbalancer:impl:config";
+    prefix "loadbalancer-impl-config";
+
+    import config { prefix config; revision-date 2013-04-05; }
+    import opendaylight-md-sal-binding { prefix md-sal-binding; revision-date 2013-10-28;}
+    //import rpc-context { prefix rpcx; revision-date 2013-06-17; }
+
+    description
+        "Service definition for loadbalancer project";
+
+    revision "2014-12-10" {
+        description
+            "Initial revision";
+    }
+
+    identity loadbalancer-impl-config {
+        base config:module-type;
+        config:java-name-prefix LoadbalancerImpl;
+    }
+
+    augment "/config:modules/config:module/config:configuration" {
+        case loadbalancer-impl-config {
+            when "/config:modules/config:module/config:type = 'loadbalancer-impl-config'";
+            container binding-aware-broker {
+                uses config:service-ref {
+                    refine type {
+                        mandatory true;
+                        config:required-identity md-sal-binding:binding-broker-osgi-registry;
+                    }
+                }
+            }
+        }
+    }
+
+    // adding jmx/jconsole access to internal loadbalancer state
+    /*augment "/config:modules/config:module/config:state" {
+        case loadbalancer-impl-config {
+            when "/config:modules/config:module/config:type = 'loadbalancer-impl-config'";
+
+            leaf lbs-made {
+                type uint32;
+            }
+
+            rpcx:rpc-context-instance "clear-lbs-made-rpc";
+        }
+    }
+
+    identity clear-lbs-made-rpc;
+
+    rpc clear-lbs-made  {
+        description
+          "JMX call to clear the lbs-made counter.";
+
+        input {
+            uses rpcx:rpc-context-ref {
+                refine context-instance {
+                    rpcx:rpc-context-instance clear-lbs-made-rpc;
+                }
+            }
+        }
+    }*/
+}
+
