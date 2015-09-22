@@ -64,6 +64,7 @@
         <feature.restconf.version>1.2.0-Lithium</feature.restconf.version>
         <feature.mdsal.version>1.2.0-Lithium</feature.mdsal.version>
         <feature.openflowplugin.version>0.1.0-Lithium</feature.openflowplugin.version>
+        <l2switch.version>0.2.2-SNAPSHOT</l2switch.version>
 
         <sonar-jacoco-listeners.version>2.4</sonar-jacoco-listeners.version>
         <sonar.core.codeCoveragePlugin>jacoco</sonar.core.codeCoveragePlugin>
