@@ -1,12 +1,12 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <checkstyle version="5.7">
+<file name="/home/federico/git/lb_odl/odlLoadBalancer/loadbalancer-consumer_NOT_YET_USED/pom.xml">
+</file>
 <file name="/home/federico/git/lb_odl/odlLoadBalancer/parent/pom.xml">
 </file>
 <file name="/home/federico/git/lb_odl/odlLoadBalancer/distribution-karaf/pom.xml">
 </file>
-<file name="/home/federico/git/lb_odl/odlLoadBalancer/loadbalancer-it/pom.xml">
-</file>
-<file name="/home/federico/git/lb_odl/odlLoadBalancer/loadbalancer-consumer/pom.xml">
+<file name="/home/federico/git/lb_odl/odlLoadBalancer/loadbalancer-it_NOT_YET_USED/pom.xml">
 </file>
 <file name="/home/federico/git/lb_odl/odlLoadBalancer/artifacts/pom.xml">
 </file>
