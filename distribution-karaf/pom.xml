@@ -41,14 +41,14 @@
       <artifactId>opendaylight-karaf-resources</artifactId>
       <version>${karaf.resources.version}</version>
     </dependency>
-   <!-- <dependency>
+    <dependency>
       <groupId>org.opendaylight.l2switch</groupId>
       <artifactId>features-l2switch</artifactId>
-      <version>${project.version}</version>
+      <version>0.2.0-Lithium</version>
       <classifier>features</classifier>
       <type>xml</type>
       <scope>runtime</scope>
-    </dependency> -->
+    </dependency>
       <dependency>
           <groupId>org.opendaylight.loadbalancer</groupId>
           <artifactId>features-loadbalancer</artifactId>
