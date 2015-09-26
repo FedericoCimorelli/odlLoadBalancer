@@ -3,6 +3,7 @@
     <modelVersion>4.0.0</modelVersion>
     <parent>
         <groupId>org.opendaylight.loadbalancer</groupId>
+        <!--  <artifactId>loadbalancer-parent</artifactId> -->
         <artifactId>loadbalancer-parent</artifactId>
         <relativePath>../parent</relativePath>
         <version>0.0.3-SNAPSHOT</version>
@@ -28,14 +29,44 @@
             <version>1.2.2-SNAPSHOT</version>
         </dependency>
         <dependency>
+            <groupId>org.opendaylight.openflowplugin.model</groupId>
+            <artifactId>model-flow-base</artifactId>
+        </dependency><dependency>
           <groupId>org.opendaylight.openflowplugin.model</groupId>
           <artifactId>model-flow-service</artifactId>
-          <version>0.1.0-SNAPSHOT</version>
+          <!--<version>0.1.0-SNAPSHOT</version>-->
+        </dependency>
+        <dependency>
+            <groupId>org.opendaylight.controller.model</groupId>
+            <artifactId>model-inventory</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.opendaylight.yangtools</groupId>
+            <artifactId>yang-binding</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.opendaylight.openflowplugin</groupId>
+            <artifactId>openflowplugin-api</artifactId>
         </dependency>
         <dependency>
             <groupId>org.osgi</groupId>
             <artifactId>org.osgi.core</artifactId>
         </dependency>
+
+        <dependency>
+      <groupId>org.opendaylight.controller</groupId>
+      <artifactId>sal-netconf-connector</artifactId>
+      <version>${mdsal.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>org.opendaylight.controller.model</groupId>
+      <artifactId>model-inventory</artifactId>
+      <version>${mdsal.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>org.opendaylight.yangtools.model</groupId>
+      <artifactId>ietf-topology</artifactId>
+    </dependency>
     </dependencies>
 
     <build>

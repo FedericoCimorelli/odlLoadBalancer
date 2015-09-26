@@ -1,4 +1,3 @@
-
 package org.opendaylight.loadbalancer;
 
 import com.google.common.base.Optional;
@@ -6,7 +5,7 @@ import com.google.common.util.concurrent.FutureCallback;
 import com.google.common.util.concurrent.Futures;
 import com.google.common.util.concurrent.SettableFuture;
 
-import java.util.concurrent.ExecutionException;
+import java.util.List;
 import java.util.concurrent.Future;
 
 import org.opendaylight.controller.md.sal.binding.api.DataBroker;
@@ -28,11 +27,14 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.NodeCon
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.NodeConnectorUpdated;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.NodeRemoved;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.NodeUpdated;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.Nodes;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.OpendaylightInventoryListener;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.packet.service.rev130709.PacketProcessingListener;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.packet.service.rev130709.PacketReceived;
-
+import org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.topology.rev131021.NetworkTopology;
+import org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.topology.rev131021.TopologyId;
+import org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.topology.rev131021.network.topology.Topology;
+import org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.topology.rev131021.network.topology.TopologyKey;
+import org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.topology.rev131021.network.topology.topology.Node;
 // Yangtools methods to manipulate RPC DTOs
 import org.opendaylight.yangtools.concepts.ListenerRegistration;
 import org.opendaylight.yangtools.yang.binding.DataObject;
@@ -41,25 +43,20 @@ import org.opendaylight.yangtools.yang.common.RpcResult;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+public class LoadbalancerImpl implements BindingAwareProvider,
+        DataChangeListener, AutoCloseable, LoadbalancerService,
+        OpendaylightInventoryListener, PacketProcessingListener {
 
-
-public class LoadbalancerImpl implements    BindingAwareProvider,
-                                            DataChangeListener,
-                                            AutoCloseable,
-                                            LoadbalancerService,
-                                            OpendaylightInventoryListener,
-                                            PacketProcessingListener{
-
-    private static final Logger LOG = LoggerFactory.getLogger(LoadbalancerImpl.class);
+    private static final Logger LOG = LoggerFactory
+            .getLogger(LoadbalancerImpl.class);
 
     private ProviderContext providerContext;
-    private DataBroker dataService;
+    private DataBroker dataBroker;
     private ListenerRegistration<DataChangeListener> dcReg;
     private BindingAwareBroker.RpcRegistration<LoadbalancerService> rpcReg;
-    public static final InstanceIdentifier<Loadbalancer> LOADBALANCER_IID = InstanceIdentifier.builder(Loadbalancer.class).build();
-
-
-
+    public static final InstanceIdentifier<Loadbalancer> LOADBALANCER_IID = InstanceIdentifier
+            .builder(Loadbalancer.class).build();
+    private static final String DEFAULT_TOPOLOGY_ID = "flow:1";
 
     @Override
     public void close() throws Exception {
@@ -68,137 +65,171 @@ public class LoadbalancerImpl implements    BindingAwareProvider,
         LOG.info("Registrations closed");
     }
 
-
-
     @Override
     public void onSessionInitiated(ProviderContext session) {
         this.providerContext = session;
-        this.dataService = session.getSALService(DataBroker.class);
-        // Register the DataChangeListener for Toaster's configuration subtree
-        dcReg = dataService.registerDataChangeListener( LogicalDatastoreType.CONFIGURATION,
-                                                        LOADBALANCER_IID,
-                                                        this,
-                                                        DataChangeScope.SUBTREE );
+        this.dataBroker = session.getSALService(DataBroker.class);
+        // Register the DataChangeListener for Loadbalancer's configuration
+        // subtree
+        dcReg = dataBroker.registerDataChangeListener(
+                LogicalDatastoreType.CONFIGURATION, LOADBALANCER_IID, this,
+                DataChangeScope.SUBTREE);
         // Register the RPC Service
         rpcReg = session.addRpcImplementation(LoadbalancerService.class, this);
         // Initialize operational and default config data in MD-SAL data store
-        initToasterOperational();
-        initToasterConfiguration();
+        initLoadbalancerOperational();
+        initLoadbalancerConfiguration();
         LOG.info("onSessionInitiated: initialization done");
     }
 
-
-
     @Override
-    public void onDataChanged( final AsyncDataChangeEvent<InstanceIdentifier<?>, DataObject> change ) {
+    public void onDataChanged(
+            final AsyncDataChangeEvent<InstanceIdentifier<?>, DataObject> change) {
         DataObject dataObject = change.getUpdatedSubtree();
-        if( dataObject instanceof Loadbalancer ){
+        if (dataObject instanceof Loadbalancer) {
             Loadbalancer loadbalancer = (Loadbalancer) dataObject;
-            LOG.info("onDataChanged - new Loadbalancer config: {}", loadbalancer);
+            LOG.info("onDataChanged - new Loadbalancer config: {}",
+                    loadbalancer);
         } else {
-            LOG.warn("onDataChanged - not instance of Loadbalancer {}", dataObject);
+            LOG.warn("onDataChanged - not instance of Loadbalancer {}",
+                    dataObject);
         }
     }
 
-
     @Override
     public void onNodeConnectorRemoved(NodeConnectorRemoved arg0) {
-        String s = "LOADBALANCER"+arg0.toString();
+        String s = "LOADBALANCER" + arg0.toString();
         LOG.info(s);
     }
 
     @Override
     public void onNodeConnectorUpdated(NodeConnectorUpdated arg0) {
-        String s = "LOADBALANCER"+arg0.toString();
+        String s = "LOADBALANCER" + arg0.toString();
         LOG.info(s);
     }
 
     @Override
     public void onNodeRemoved(NodeRemoved arg0) {
-        String s = "LOADBALANCER"+arg0.toString();
+        String s = "LOADBALANCER" + arg0.toString();
         LOG.info(s);
     }
 
     @Override
     public void onNodeUpdated(NodeUpdated arg0) {
-        String s = "LOADBALANCER"+arg0.toString();
+        String s = "LOADBALANCER" + arg0.toString();
         LOG.info(s);
     }
 
     @Override
     public void onPacketReceived(PacketReceived arg0) {
-        String s = "LOADBALANCER"+arg0.toString();
+        String s = "LOADBALANCER" + arg0.toString();
         LOG.info(s);
     }
 
-
-
-
-
     private void testAccessDataInMdSal() {
         LOG.info("Test access data in MD-SAL - start");
-        InstanceIdentifier<Nodes> nI = InstanceIdentifier.builder(Nodes.class).build();
-        ReadOnlyTransaction readTransaction = dataService.newReadOnlyTransaction();
+        // Get topology and extract links
+        InstanceIdentifier<Topology> topologyInstanceIdentifier = InstanceIdentifier
+                .builder(NetworkTopology.class)
+                .child(Topology.class,
+                        new TopologyKey(new TopologyId(DEFAULT_TOPOLOGY_ID)))
+                .build();
+        Topology topology = null;
+        ReadOnlyTransaction readOnlyTransaction = dataBroker
+                .newReadOnlyTransaction();
         try {
-            Optional<Nodes> optionalData = readTransaction.read(LogicalDatastoreType.CONFIGURATION, nI).get();
-            if (optionalData.isPresent()) {
-                Nodes ns = (Nodes) optionalData.get();
-                LOG.info(ns.toString());
+            Optional<Topology> topologyOptional = readOnlyTransaction.read(
+                    LogicalDatastoreType.OPERATIONAL,
+                    topologyInstanceIdentifier).get();
+            if (topologyOptional.isPresent()) {
+                topology = topologyOptional.get();
+                LOG.info("Test access data in MD-SAL - topology is present");
             }
-        } catch (ExecutionException | InterruptedException e) {
-            readTransaction.close();
-            String sLog = "Test access data in MD-SAL - error: "+e.getMessage();
-            LOG.info(sLog);
+        } catch (Exception e) {
+            LOG.error("Error reading topology {}", topologyInstanceIdentifier);
+            readOnlyTransaction.close();
+            throw new RuntimeException("Error reading from operational store, topology : " + topologyInstanceIdentifier, e);
+        }
+        readOnlyTransaction.close();
+        if (topology == null) {
+            LOG.info("Test access data in MD-SAL - topology is null");
+        }
+
+        List<Node> nodes = topology.getNode();
+        if(nodes != null){
+            LOG.info("Test access data in MD-SAL - nodes are present");
+            LOG.info(nodes.toString());
+            String s = "WWWWWWWWWWWWW "+nodes.size();
+            LOG.info(s);
+            Node n = nodes.get(0);
+            if(n != null){
+                LOG.info("1111111111111111");
+                LOG.info("Test access data in MD-SAL - node at index 0 is present");
+                LOG.info(n.toString());
+                LOG.info("2222222222222222");
+            }
+            else{
+                LOG.info("Test access data in MD-SAL - node at index 0 is null");
+            }
+            n = nodes.get(1);
+            if(n != null){
+                LOG.info("1111111111111111");
+                LOG.info("Test access data in MD-SAL - node at index 0 is present");
+                LOG.info(n.toString());
+                LOG.info("2222222222222222");
+            }
+            else{
+                LOG.info("Test access data in MD-SAL - node at index 1 is null");
+            }
+        }
+        else{
+            LOG.info("Test access data in MD-SAL - nodes is null");
         }
         LOG.info("Test access data in MD-SAL - end");
     }
 
-
-
-
     @Override
-    public Future<RpcResult<Void>> startLoadbalancer(StartLoadbalancerInput input) {
+    public Future<RpcResult<Void>> startLoadbalancer(
+            StartLoadbalancerInput input) {
         LOG.info("Test start loadbalancer service - start");
-        //TESTING METHODS
+        // TESTING METHODS
         testAccessDataInMdSal();
         LOG.info("Test start loadbalancer service - end");
-        final SettableFuture<RpcResult<Void>> futureResult = SettableFuture.create();
+        final SettableFuture<RpcResult<Void>> futureResult = SettableFuture
+                .create();
         return futureResult;
     }
 
-
-
-
-
-    private void initToasterOperational() {
+    private void initLoadbalancerOperational() {
         Loadbalancer loadbalancer = new LoadbalancerBuilder()
                 .setDarknessFactor(1000l)
-                .setLoadbalancerStatus(LoadbalancerStatus.Down)
-                .build();
-        WriteTransaction tx = dataService.newWriteOnlyTransaction();
+                .setLoadbalancerStatus(LoadbalancerStatus.Down).build();
+        WriteTransaction tx = dataBroker.newWriteOnlyTransaction();
         tx.put(LogicalDatastoreType.OPERATIONAL, LOADBALANCER_IID, loadbalancer);
         Futures.addCallback(tx.submit(), new FutureCallback<Void>() {
             @Override
             public void onSuccess(final Void result) {
-                LOG.info("initToasterOperational: transaction succeeded");
+                LOG.info("initLoadbalancerOperational: transaction succeeded");
             }
+
             @Override
             public void onFailure(final Throwable t) {
-                LOG.error("initToasterOperational: transaction failed");
+                LOG.error("initLoadbalancerOperational: transaction failed");
             }
         });
-        LOG.info("initToasterOperational: operational status populated: {}", loadbalancer);
+        LOG.info(
+                "initLoadbalancerOperational: operational status populated: {}",
+                loadbalancer);
     }
 
-
-
-
-    private void initToasterConfiguration() {
-        Loadbalancer toaster = new LoadbalancerBuilder().setDarknessFactor((long)1000).build();
-        WriteTransaction tx = dataService.newWriteOnlyTransaction();
+    private void initLoadbalancerConfiguration() {
+        Loadbalancer toaster = new LoadbalancerBuilder().setDarknessFactor(
+                (long) 1000).build();
+        WriteTransaction tx = dataBroker.newWriteOnlyTransaction();
         tx.put(LogicalDatastoreType.CONFIGURATION, LOADBALANCER_IID, toaster);
         tx.submit();
-        LOG.info("initToasterConfiguration: default config populated: {}", toaster);
+        LOG.info("initLoadbalancerConfiguration: default config populated: {}",
+                toaster);
     }
 
 }
