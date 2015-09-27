@@ -37,33 +37,33 @@
         <netconf-exercise.version>1.0.0-SNAPSHOT</netconf-exercise.version>
 
         <!-- ODL Controller Dependency Versions -->
-        <controller.mdsal.version>1.2.0-Lithium</controller.mdsal.version>
-        <mdsal.version>1.2.0-Lithium</mdsal.version>
+        <controller.mdsal.version>1.2.2-SNAPSHOT</controller.mdsal.version>
+        <mdsal.version>1.2.2-SNAPSHOT</mdsal.version>
         <controller.model.version>1.2.0-Lithium</controller.model.version>
-        <controller.config.version>0.3.0-Lithium</controller.config.version>
-        <controller.restconf.version>1.2.0-Lithium</controller.restconf.version>
-        <yangtools.version>0.7.0-Lithium</yangtools.version>
+        <controller.config.version>0.3.2-SNAPSHOT</controller.config.version>
+        <controller.restconf.version>1.2.2-SNAPSHOT</controller.restconf.version>
+        <yangtools.version>0.7.2-SNAPSHOT</yangtools.version>
         <yang.jmx.version>0.3.0-Lithium</yang.jmx.version>
         <ietf-inet-types.version>2010.09.24.7-Lithium</ietf-inet-types.version>
         <ietf-yang-types.version>2010.09.24.7-Lithium</ietf-yang-types.version>
         <yang-ext.version>2013.09.07.7-Lithium</yang-ext.version>
 
         <!-- Southbound plugin versions -->
-        <openflowplugin.version>0.1.0-Lithium</openflowplugin.version>
+        <openflowplugin.version>0.1.2-SNAPSHOT</openflowplugin.version>
 
         <!-- Karaf and maven dependencies -->
-        <karaf-empty.version>1.6.0-Lithium</karaf-empty.version>
-        <karaf.version>3.0.3</karaf.version>
-        <karaf.resources.version>1.5.0-Lithium</karaf.resources.version>
+        <karaf-empty.version>1.5.0-Lithium</karaf-empty.version>
+        <karaf.version>3.0.1</karaf.version>
+        <karaf.resources.version>1.5.2-SNAPSHOT</karaf.resources.version>
         <build.plugins.plugin.version>1.9.1</build.plugins.plugin.version>
 
-        <!-- Karaf feature version -->
+        <!-- Karaf feature version
         <feature.base.version>1.5.0-Lithium</feature.base.version>
-        <feature.empty.version>1.5.0-Lithium</feature.empty.version>
+        <feature.empty.version>1.5.0-Lithium</feature.empty.version>  -->
         <feature.netconf.connector.version>1.2.0-Lithium</feature.netconf.connector.version>
-        <feature.restconf.version>1.2.0-Lithium</feature.restconf.version>
-        <feature.mdsal.version>1.2.0-Lithium</feature.mdsal.version>
-        <feature.openflowplugin.version>0.1.0-Lithium</feature.openflowplugin.version>
+        <feature.restconf.version>1.2.2-SNAPSHOT</feature.restconf.version>
+        <feature.mdsal.version>1.2.2-SNAPSHOT</feature.mdsal.version>
+        <feature.openflowplugin.version>0.1.2-SNAPSHOT</feature.openflowplugin.version>
         <l2switch.version>0.2.2-SNAPSHOT</l2switch.version>
 
         <sonar-jacoco-listeners.version>2.4</sonar-jacoco-listeners.version>
@@ -81,7 +81,7 @@
         <maven.source.version>2.2.1</maven.source.version>
         <salGeneratorPath>target/generated-sources/sal</salGeneratorPath>
         <jmxGeneratorPath>target/generated-sources/config</jmxGeneratorPath>
-        <branding.version>1.0.2-SNAPSHOT</branding.version>
+        <branding.version>1.1.2-SNAPSHOT</branding.version>
         <feature.test.version>0.7.2-SNAPSHOT</feature.test.version>
         <karaf.empty.version>1.5.2-SNAPSHOT</karaf.empty.version>
         <surefire.version>2.16</surefire.version>
