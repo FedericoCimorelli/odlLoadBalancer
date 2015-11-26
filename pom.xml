@@ -6,7 +6,7 @@
     <parent>
         <groupId>org.opendaylight.loadbalancer</groupId>
         <artifactId>loadbalancer-parent</artifactId>
-        <version>0.0.3-SNAPSHOT</version>
+        <version>0.0.4-SNAPSHOT</version>
         <relativePath>parent</relativePath>
     </parent>
 
@@ -16,7 +16,7 @@
     <name>${project.artifactId}</name>
 
     <prerequisites>
-        <maven>3.1.1</maven>
+        <maven>3.+</maven>
     </prerequisites>
 
     <modules>

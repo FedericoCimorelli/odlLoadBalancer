@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
 <fileset-config file-format-version="1.2.0" simple-config="false" sync-formatter="false">
-  <local-check-config name="maven-checkstyle-plugin default" location="jar:file:/home/federico/.m2/repository/org/opendaylight/yangtools/checkstyle-logging/0.7.0-Lithium/checkstyle-logging-0.7.0-Lithium.jar!/checkstyle-logging.xml" type="remote" description="maven-checkstyle-plugin configuration default">
+  <local-check-config name="maven-checkstyle-plugin default" location="jar:file:/home/federico/.m2/repository/org/opendaylight/yangtools/checkstyle-logging/0.7.2-SNAPSHOT/checkstyle-logging-0.7.2-SNAPSHOT.jar!/checkstyle-logging.xml" type="remote" description="maven-checkstyle-plugin configuration default">
     <property name="checkstyle.cache.file" value="${project_loc}/target/checkstyle-cachefile"/>
     <property name="checkstyle.header.file" value="/home/federico/git/odlLoadBalancer/features/target/checkstyle-header-default.txt"/>
   </local-check-config>

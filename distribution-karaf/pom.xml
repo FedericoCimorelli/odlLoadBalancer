@@ -4,15 +4,16 @@
     <parent>
         <groupId>org.opendaylight.loadbalancer</groupId>
         <artifactId>loadbalancer-parent</artifactId>
-        <version>0.0.3-SNAPSHOT</version>
+        <version>0.0.4-SNAPSHOT</version>
         <relativePath>../parent</relativePath>
     </parent>
 
   <artifactId>distribution-karaf</artifactId>
 
   <packaging>pom</packaging>
+
   <prerequisites>
-    <maven>3.1.1</maven>
+    <maven>3.+</maven>
   </prerequisites>
 
   <dependencies>
@@ -41,21 +42,36 @@
       <artifactId>opendaylight-karaf-resources</artifactId>
       <version>${karaf.resources.version}</version>
     </dependency>
-    <dependency>
+<!--    <dependency>
       <groupId>org.opendaylight.l2switch</groupId>
       <artifactId>features-l2switch</artifactId>
-      <version>0.2.0-Lithium</version>
+      <version>${l2switch.version}</version>
       <classifier>features</classifier>
       <type>xml</type>
       <scope>runtime</scope>
     </dependency>
-      <dependency>
+    <dependency>
+        <groupId>org.opendaylight.openflowplugin</groupId>
+        <artifactId>openflowplugin-artifacts</artifactId>
+        <version>${openflowplugin.version}</version>
+        <classifier>features</classifier>
+        <type>xml</type>
+        <scope>runtime</scope>
+    </dependency>-->
+    <dependency>
+      <artifactId>features-openflowplugin</artifactId>
+      <groupId>org.opendaylight.openflowplugin</groupId>
+      <classifier>features</classifier>
+      <type>xml</type>
+      <scope>runtime</scope>
+    </dependency>
+    <dependency>
           <groupId>org.opendaylight.loadbalancer</groupId>
           <artifactId>features-loadbalancer</artifactId>
           <classifier>features</classifier>
           <type>xml</type>
           <scope>runtime</scope>
-      </dependency>
+     </dependency>
   </dependencies>
 
   <build>
@@ -155,9 +171,9 @@
               <feature>odl-openflowplugin-flow-services</feature>
               <feature>odl-restconf</feature>
               -->
-              <!-- this effectively does a feature:install in karaf -->
+              <!-- this effectively does a feature:install in karaf
               <feature>odl-openflowplugin-flow-services</feature>
-              <feature>odl-restconf</feature>
+              <feature>odl-restconf</feature>-->
               <feature>odl-loadbalancer-api</feature>
               <feature>odl-loadbalancer-impl</feature>
           </bootFeatures>
@@ -263,12 +279,10 @@
       </plugin>
     </plugins>
   </build>
-  <!--
   <scm>
     <connection>scm:git:ssh://git.opendaylight.org:29418/loadbalancer.git</connection>
     <developerConnection>scm:git:ssh://git.opendaylight.org:29418/loadbalancer.git</developerConnection>
     <tag>HEAD</tag>
     <url>https://git.opendaylight.org/gerrit/gitweb?p=loadbalancer.git;a=summary</url>
   </scm>
-  -->
 </project>

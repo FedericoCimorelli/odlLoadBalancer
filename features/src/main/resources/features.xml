@@ -5,13 +5,17 @@
    xsi:schemaLocation="http://karaf.apache.org/xmlns/features/v1.2.0 http://karaf.apache.org/xmlns/features/v1.2.0">
 
     <repository>mvn:org.opendaylight.yangtools/features-yangtools/${yangtools.version}/xml/features</repository>
+    <repository>mvn:org.opendaylight.mdsal/features-mdsal/${mdsal.version}/xml/features</repository>
     <repository>mvn:org.opendaylight.controller/features-mdsal/${controller.mdsal.version}/xml/features</repository>
     <repository>mvn:org.opendaylight.controller/features-restconf/${controller.restconf.version}/xml/features</repository>
-    <repository>mvn:org.opendaylight.openflowplugin/features-openflowplugin/${openflowplugin.version}/xml/features</repository>
+    <repository>mvn:org.opendaylight.openflowplugin/features-openflowplugin/${feature.openflowplugin.version}/xml/features</repository>
 
     <feature name='odl-loadbalancer-api' version='${project.version}' description='OpenDaylight :: loadbalancer :: API'>
+       <!-- <feature version='${yangtools.version}'>odl-yangtools-common</feature> -->
+        <feature version='${mdsal.version}'>odl-mdsal-binding-base</feature>
         <feature version='${yangtools.version}'>odl-yangtools-common</feature>
-        <feature version='${yangtools.version}'>odl-yangtools-binding</feature>
+        <feature version='${mdsal.version}'>odl-mdsal-binding</feature>
+        <!-- <feature version='${yangtools.version}'>odl-yangtools-models</feature> -->
         <feature version='${controller.restconf.version}'>odl-restconf</feature>
         <bundle>mvn:org.opendaylight.loadbalancer/loadbalancer-api/${project.version}</bundle>
     </feature>
@@ -19,18 +23,11 @@
     <feature name='odl-loadbalancer-impl' version='${project.version}' description='OpenDaylight :: loadbalancer :: Impl'>
         <feature version='${controller.mdsal.version}'>odl-mdsal-broker</feature>
         <feature version='${controller.restconf.version}'>odl-restconf</feature>
-        <feature version="${openflowplugin.version}">odl-openflowplugin-flow-services</feature>
-        <feature version="${openflowplugin.version}">odl-openflowplugin-southbound</feature>
+        <feature version="${feature.openflowplugin.version}">odl-openflowplugin-flow-services</feature>
+        <feature version="${feature.openflowplugin.version}">odl-openflowplugin-southbound</feature>
         <feature version='${project.version}'>odl-loadbalancer-api</feature>
         <bundle>mvn:org.opendaylight.loadbalancer/loadbalancer-impl/${project.version}</bundle>
         <configfile finalname="loadbalancer-impl-config.xml">mvn:org.opendaylight.loadbalancer/loadbalancer-impl/${project.version}/xml/config</configfile>
     </feature>
 
-    <feature name='odl-loadbalancer-consumer' version='${project.version}' description='OpenDaylight :: loadbalancer :: Consumer'>
-        <feature version='${controller.mdsal.version}'>odl-mdsal-broker</feature>
-        <feature version='${controller.restconf.version}'>odl-restconf</feature>
-        <feature version='${project.version}'>odl-loadbalancer-api</feature>
-        <feature version='${project.version}'>odl-loadbalancer-impl</feature>
-        <bundle>mvn:org.opendaylight.loadbalancer/loadbalancer-consumer/${project.version}</bundle>
-    </feature>
 </features>
