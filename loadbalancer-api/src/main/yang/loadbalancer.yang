@@ -21,14 +21,6 @@ module loadbalancer {
     }
 
 
-    identity lb-type {
-      description
-        "Base for all bread types supported by the loadbalancer.
-           New bread types not listed here nay be added in the
-           future.";
-    }
-
-
     container loadbalancer {
       presence
         "Indicates the loadbalancer service is available";
@@ -57,15 +49,14 @@ module loadbalancer {
                the loadbalancer.";
       }
 
-      leaf darknessFactor {
+      leaf loadbalancerInputParamOne {
         type uint32;
         config true;
-        default 1000;
+        default 100;
         description
-          "The darkness factor. Basically, the number of ms to multiple the doneness value by.";
+          "Parameter loadbalancerInputParamOne's descroption";
       }
-    }  // container loadbalancer
-
+    }
 
 
     rpc start-loadbalancer{
@@ -77,6 +68,95 @@ module loadbalancer {
                 default 100;
                 }
             }
+        output {
+            leaf response-code {
+                type uint32;
+                description "Response code, 0 ok, <0 ko";
+                default 0;
+                }
+            leaf response-message{
+                type string;
+                description "Response message";
+                default "ND";
+            }
+        }
+    }
+
+
+    rpc stop-loadbalancer{
+        description "Stop loadbalancer algorithm";
+        output {
+            leaf response-code {
+                type uint32;
+                description "Response code, 0 ok, <0 ko";
+                default 0;
+                }
+            }
         }
 
-  }  // module loadbalancer
+
+    rpc get-loadbalancer-status{
+        description "Return the status of the loadbalancer";
+        output {
+            leaf response-code {
+                type uint32;
+                description "Response code, 1 UP, 0 DOWN, <0 ERROR";
+                default 0;
+                }
+            }
+        }
+
+
+    rpc set-switch-role{
+        description "Sets the role on the switch ids in input";
+        input {
+            leaf ofp-role{
+                type uint32;
+                description "The role to be triggered (1:OFPxyz, 2:OFP...)";
+                default 1;
+                }
+            leaf-list switch-ids{
+                type string;
+                description "The switches of interest";
+                min-elements 1;
+            }
+        }
+        output {
+            leaf response-code {
+                type uint32;
+                description "Response code, 0 ok, <0 ko";
+                default 0;
+                }
+            leaf response-message{
+                type string;
+                description "Response message";
+                default "ND";
+            }
+        }
+    }
+
+
+    rpc get-switch-role{
+        description "Returns the role on the switch ids in input";
+        input {
+            leaf-list switch-ids{
+                type string;
+                description "The switches of interest";
+                min-elements 1;
+            }
+        }
+        output {
+            leaf response-code {
+                type uint32;
+                description "Response code, 0 ok, <0 ko";
+                default 0;
+                }
+            leaf-list response-message{
+                type string;
+                description "Response message in 'dpID:role' format";
+                default "ND";
+            }
+        }
+    }
+
+  }

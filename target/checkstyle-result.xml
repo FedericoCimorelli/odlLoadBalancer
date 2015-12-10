@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<checkstyle version="5.7">
+<checkstyle version="6.2">
 <file name="/home/federico/git/odlLoadBalancer/parent/pom.xml">
 </file>
 <file name="/home/federico/git/odlLoadBalancer/distribution-karaf/pom.xml">

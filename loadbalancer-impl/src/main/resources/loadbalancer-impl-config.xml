@@ -12,6 +12,10 @@ and is available at http://www.eclipse.org/legal/epl-v10.html
     <required-capabilities>
         <capability>urn:opendaylight:params:xml:ns:yang:loadbalancer:impl:config?module=loadbalancer-impl-config&amp;revision=2014-12-10</capability>
         <capability>urn:opendaylight:params:xml:ns:yang:controller:md:sal:binding?module=opendaylight-md-sal-binding&amp;revision=2013-10-28</capability>
+        <capability>urn:opendaylight:params:xml:ns:yang:openflow:common:config:impl?module=openflow-provider-impl&amp;revision=2014-03-26</capability>
+        <capability>urn:opendaylight:params:xml:ns:yang:openflow:common:config?module=openflow-provider&amp;revision=2014-03-26</capability>
+        <capability>urn:opendaylight:params:xml:ns:yang:openflow:switch:connection:provider:impl?module=openflow-switch-connection-provider-impl&amp;revision=2014-03-28</capability>
+        <capability>urn:opendaylight:params:xml:ns:yang:openflow:switch:connection:provider?module=openflow-switch-connection-provider&amp;revision=2014-03-28</capability>
     </required-capabilities>
     <configuration>
 
