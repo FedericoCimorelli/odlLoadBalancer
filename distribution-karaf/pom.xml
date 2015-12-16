@@ -181,9 +181,9 @@
               -->
               <!-- this effectively does a feature:install in karaf
               <feature>odl-openflowplugin-flow-services</feature>
-              <feature>odl-restconf</feature>-->
+              <feature>odl-restconf</feature>
               <feature>odl-loadbalancer-api</feature>
-              <feature>odl-loadbalancer-impl</feature>
+              <feature>odl-loadbalancer-impl</feature>-->
           </bootFeatures>
         </configuration>
         <executions>

@@ -48,21 +48,6 @@
         <l2switch.version>0.3.0-SNAPSHOT</l2switch.version>
         <feature.test.version>0.8.0-SNAPSHOT</feature.test.version>
         <sonar-jacoco-listeners.version>2.4</sonar-jacoco-listeners.version>
-<!--
-        <sonar-jacoco-listeners.version>2.4</sonar-jacoco-listeners.version>
-        <sonar.core.codeCoveragePlugin>jacoco</sonar.core.codeCoveragePlugin>
-        <sonar.jacoco.reportPath>target/code-coverage/jacoco.exec</sonar.jacoco.reportPath>
-        <sonar.jacoco.itReportPath>target/code-coverage/jacoco-it.exec</sonar.jacoco.itReportPath>
-        <sonar.profile>Sonar way with Findbugs</sonar.profile>
-        <maven.compiler.version>3.1</maven.compiler.version>
-        <maven.dependency.version>2.8</maven.dependency.version>
-        <maven.info.reports.version>2.7</maven.info.reports.version>
-        <maven.jar.version>2.4</maven.jar.version>
-        <maven.javadoc.version>2.9.1</maven.javadoc.version>
-        <maven.shade.version>2.1</maven.shade.version>
-        <maven.site.version>3.3</maven.site.version>
-        <maven.source.version>2.2.1</maven.source.version>
-        -->
         <salGeneratorPath>target/generated-sources/sal</salGeneratorPath>
         <jmxGeneratorPath>target/generated-sources/config</jmxGeneratorPath>
         <surefire.version>2.16</surefire.version>
@@ -116,61 +101,6 @@
                 <artifactId>yang-binding</artifactId>
                 <version>${yangtools.version}</version>
             </dependency>
-<!--
-            <dependency>
-                <groupId>org.opendaylight.yangtools.model</groupId>
-                <artifactId>ietf-yang-types</artifactId>
-                <version>${ietf-yang-types.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>org.opendaylight.yangtools.model</groupId>
-                <artifactId>ietf-inet-types</artifactId>
-                <version>${ietf-inet-types.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>org.opendaylight.yangtools.model</groupId>
-                <artifactId>yang-ext</artifactId>
-                <version>${yang-ext.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>org.opendaylight.yangtools</groupId>
-                <artifactId>yangtools-artifacts</artifactId>
-                <version>${yangtools.version}</version>
-                <scope>import</scope>
-                <type>pom</type>
-            </dependency>
-            <dependency>
-                <groupId>org.opendaylight.yangtools</groupId>
-                <artifactId>yang-common</artifactId>
-                <version>${yangtools.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>org.opendaylight.yangtools</groupId>
-                <artifactId>yang-binding</artifactId>
-                <version>${yangtools.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>org.opendaylight.controller</groupId>
-                <artifactId>config-artifacts</artifactId>
-                <version>${controller.config.version}</version>
-                <scope>import</scope>
-                <type>pom</type>
-            </dependency>
-            <dependency>
-                <groupId>org.opendaylight.controller</groupId>
-                <artifactId>config-api</artifactId>
-                <version>${controller.config.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>org.opendaylight.controller</groupId>
-                <artifactId>sal-binding-config</artifactId>
-                <version>${mdsal.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>org.opendaylight.controller</groupId>
-                <artifactId>sal-binding-api</artifactId>
-                <version>${mdsal.version}</version>
-                </dependency>-->
         </dependencies>
     </dependencyManagement>
 
@@ -212,9 +142,6 @@
                     </reportSet>
                 </reportSets>
             </plugin>
-            <!--plugin> <groupId>org.codehaus.mojo</groupId> <artifactId>findbugs-maven-plugin</artifactId>
-                <version>2.4.0</version> <configuration> <effort>Max</effort> <threshold>Low</threshold>
-                <goal>site</goal> </configuration> </plugin -->
         </plugins>
     </reporting>
     <!-- End unknown section -->
