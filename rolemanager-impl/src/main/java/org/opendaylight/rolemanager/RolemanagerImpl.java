@@ -72,7 +72,7 @@ public class RolemanagerImpl implements BindingAwareProvider,
     private DataBroker dataBroker;
     private ListenerRegistration<DataChangeListener> dcReg;
     private BindingAwareBroker.RpcRegistration<RolemanagerService> rpcReg;
-    public static final InstanceIdentifier<Rolemanager> LOADBALANCER_IID = InstanceIdentifier.builder(Rolemanager.class).build();
+    public static final InstanceIdentifier<Rolemanager> ROLEMANAGER_IID = InstanceIdentifier.builder(Rolemanager.class).build();
     private static final String DEFAULT_TOPOLOGY_ID = "flow:1";
 
 
@@ -91,7 +91,7 @@ public class RolemanagerImpl implements BindingAwareProvider,
         this.providerContext = session;
         this.dataBroker = session.getSALService(DataBroker.class);
         dcReg = dataBroker.registerDataChangeListener(
-                LogicalDatastoreType.CONFIGURATION, LOADBALANCER_IID, this,
+                LogicalDatastoreType.CONFIGURATION, ROLEMANAGER_IID, this,
                 DataChangeScope.SUBTREE);
         rpcReg = session.addRpcImplementation(RolemanagerService.class, this);
         initRolemanagerOperational();
@@ -106,9 +106,9 @@ public class RolemanagerImpl implements BindingAwareProvider,
     public void onDataChanged(final AsyncDataChangeEvent<InstanceIdentifier<?>, DataObject> change) {
         DataObject dataObject = change.getUpdatedSubtree();
         if (dataObject instanceof Rolemanager) {
-            Rolemanager loadbalancer = (Rolemanager) dataObject;
+            Rolemanager rolemanager = (Rolemanager) dataObject;
             LOG.info(TAG, "onDataChanged - new Rolemanager config: {}",
-                    loadbalancer);
+                    rolemanager);
         } else {
             LOG.warn(TAG, "onDataChanged - not instance of Rolemanager {}",
                     dataObject);
@@ -193,9 +193,9 @@ public class RolemanagerImpl implements BindingAwareProvider,
 
 
     private void initRolemanagerOperational() {
-        Rolemanager loadbalancer = new RolemanagerBuilder().setRolemanagerStatus(RolemanagerStatus.Down).build();
+        Rolemanager rolemanager = new RolemanagerBuilder().setRolemanagerStatus(RolemanagerStatus.Down).build();
         WriteTransaction tx = dataBroker.newWriteOnlyTransaction();
-        tx.put(LogicalDatastoreType.OPERATIONAL, LOADBALANCER_IID, loadbalancer);
+        tx.put(LogicalDatastoreType.OPERATIONAL, ROLEMANAGER_IID, rolemanager);
         Futures.addCallback(tx.submit(), new FutureCallback<Void>() {
             @Override
             public void onSuccess(final Void result) {
@@ -206,17 +206,17 @@ public class RolemanagerImpl implements BindingAwareProvider,
                 LOG.error("initRolemanagerOperational: transaction failed");
             }
         });
-        LOG.info("initRolemanagerOperational: operational status populated: {}", loadbalancer);
+        LOG.info("initRolemanagerOperational: operational status populated: {}", rolemanager);
     }
 
 
 
     private void initRolemanagerConfiguration() {
-        Rolemanager loadbalancer = new RolemanagerBuilder()/*.setDarknessFactor((long) 1000)*/.build();
+        Rolemanager rolemanager = new RolemanagerBuilder()/*.setDarknessFactor((long) 1000)*/.build();
         WriteTransaction tx = dataBroker.newWriteOnlyTransaction();
-        tx.put(LogicalDatastoreType.CONFIGURATION, LOADBALANCER_IID, loadbalancer);
+        tx.put(LogicalDatastoreType.CONFIGURATION, ROLEMANAGER_IID, rolemanager);
         tx.submit();
-        LOG.info("initRolemanagerConfiguration: default config populated: {}", loadbalancer);
+        LOG.info("initRolemanagerConfiguration: default config populated: {}", rolemanager);
     }
 
 
@@ -228,17 +228,9 @@ public class RolemanagerImpl implements BindingAwareProvider,
     public Future<RpcResult<StartRolemanagerOutput>> startRolemanager(StartRolemanagerInput input) {
         LOG.info(TAG, "Starting Rolemanager...");
         LOG.info(TAG, "Write loadbalancer status in datastore");
-        Rolemanager loadbalancer = new RolemanagerBuilder().setRolemanagerStatus(RolemanagerStatus.Up).build();
+        Rolemanager rolemanager = new RolemanagerBuilder().setRolemanagerStatus(RolemanagerStatus.Up).build();
         WriteTransaction tx = dataBroker.newWriteOnlyTransaction();
-        tx.put(LogicalDatastoreType.OPERATIONAL, LOADBALANCER_IID, loadbalancer);
-        Futures.addCallback(tx.submit(), new FutureCallback<Void>() {
-            @Override
-            public void onSuccess(final Void result) {
-            }
-            @Override
-            public void onFailure(final Throwable t) {
-            }
-        });
+        tx.put(LogicalDatastoreType.OPERATIONAL, ROLEMANAGER_IID, rolemanager);
         //
         //TODO
         //
@@ -260,17 +252,17 @@ public class RolemanagerImpl implements BindingAwareProvider,
         LOG.info(TAG, "Get Rolemanager status started...");
         LOG.info(TAG, "Reading Rolemanager status");
         ReadOnlyTransaction tx = dataBroker.newReadOnlyTransaction();
-        Optional<Rolemanager> loadbalancer = null;
+        Optional<Rolemanager> rolemanager = null;
         GetRolemanagerStatusOutputBuilder glbsob = new GetRolemanagerStatusOutputBuilder();
         try {
-            loadbalancer = tx.read(LogicalDatastoreType.OPERATIONAL, LOADBALANCER_IID).get();
+            rolemanager = tx.read(LogicalDatastoreType.OPERATIONAL, ROLEMANAGER_IID).get();
         } catch (InterruptedException | ExecutionException e) {
             LOG.error(TAG, "Error when retrieving the Rolemanager status");
             glbsob.setResponseCode(-1L);
         }
-        if(loadbalancer!=null && loadbalancer.isPresent()){
+        if(rolemanager!=null && rolemanager.isPresent()){
             LOG.error(TAG, "Rolemanager status null or not present");
-            long status = loadbalancer.get().getRolemanagerStatus().getIntValue();
+            long status = rolemanager.get().getRolemanagerStatus().getIntValue();
             glbsob.setResponseCode(status);
         }
         else
@@ -287,17 +279,9 @@ public class RolemanagerImpl implements BindingAwareProvider,
     @Override
     public Future<RpcResult<StopRolemanagerOutput>> stopRolemanager() {
         LOG.info(TAG, "Stopping Rolemanager...");
-        Rolemanager loadbalancer = new RolemanagerBuilder().setRolemanagerStatus(RolemanagerStatus.Down).build();
+        Rolemanager rolemanager = new RolemanagerBuilder().setRolemanagerStatus(RolemanagerStatus.Down).build();
         WriteTransaction tx = dataBroker.newWriteOnlyTransaction();
-        tx.put(LogicalDatastoreType.OPERATIONAL, LOADBALANCER_IID, loadbalancer);
-        Futures.addCallback(tx.submit(), new FutureCallback<Void>() {
-            @Override
-            public void onSuccess(final Void result) {
-            }
-            @Override
-            public void onFailure(final Throwable t) {
-            }
-        });
+        tx.put(LogicalDatastoreType.OPERATIONAL, ROLEMANAGER_IID, rolemanager);
         //
         //TODO
         //
@@ -386,17 +370,5 @@ public class RolemanagerImpl implements BindingAwareProvider,
         return RpcResultBuilder.success(gsrob.build()).buildFuture();
     }
 
-
-
-    private int getRoleIntValue(String string) {
-        LOG.info(TAG, string);
-        // TODO
-        // TODO
-        // TODO
-        // 0 NOCHANGE
-        // 1 BECOME MASTAR
-        // 2 BECOME SLAVE
-        return 1;
-    }
 
 }
