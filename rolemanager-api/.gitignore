@@ -27,3 +27,6 @@ maven-eclipse.xml
 .DS_STORE
 .metadata
 .checkstyle
+/target/
+/target/
+/target/
