@@ -11,9 +11,9 @@
         <relativePath></relativePath>
     </parent>
 
-    <groupId>org.opendaylight.loadbalancer</groupId>
-    <artifactId>loadbalancer-parent</artifactId>
-    <name>loadbalancer parent</name>
+    <groupId>org.opendaylight.rolemanager</groupId>
+    <artifactId>rolemanager-parent</artifactId>
+    <name>rolemanager parent</name>
     <version>0.0.4-SNAPSHOT</version>
     <packaging>pom</packaging>
 
@@ -56,8 +56,8 @@
     <dependencyManagement>
         <dependencies>
             <dependency>
-                <groupId>org.opendaylight.loadbalancer</groupId>
-                <artifactId>loadbalancer-artifacts</artifactId>
+                <groupId>org.opendaylight.rolemanager</groupId>
+                <artifactId>rolemanager-artifacts</artifactId>
                 <version>${project.version}</version>
                 <scope>import</scope>
                 <type>pom</type>

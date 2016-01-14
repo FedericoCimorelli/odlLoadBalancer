@@ -4,14 +4,14 @@
     <modelVersion>4.0.0</modelVersion>
 
     <parent>
-        <groupId>org.opendaylight.loadbalancer</groupId>
-        <artifactId>loadbalancer-parent</artifactId>
+        <groupId>org.opendaylight.rolemanager</groupId>
+        <artifactId>rolemanager-parent</artifactId>
         <version>0.0.4-SNAPSHOT</version>
         <relativePath>parent</relativePath>
     </parent>
 
-    <artifactId>loadbalancer</artifactId>
-    <description>loadbalancer Archetype Top Level POM</description>
+    <artifactId>rolemanager</artifactId>
+    <description>rolemanager Archetype Top Level POM</description>
     <packaging>pom</packaging>
     <name>${project.artifactId}</name>
 
@@ -22,9 +22,8 @@
     <modules>
         <module>parent</module>
         <module>artifacts</module>
-        <module>loadbalancer-impl</module>
-        <module>loadbalancer-api</module>
-        <!--<module>loadbalancer-consumer</module>-->
+        <module>rolemanager-impl</module>
+        <module>rolemanager-api</module>
         <module>features</module>
         <module>distribution-karaf</module>
     </modules>
