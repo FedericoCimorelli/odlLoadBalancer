@@ -11,7 +11,7 @@
     </parent>
 
     <artifactId>rolemanager</artifactId>
-    <description>rolemanager Archetype Top Level POM</description>
+    <description>Role Manager Archetype Top Level POM</description>
     <packaging>pom</packaging>
     <name>${project.artifactId}</name>
 

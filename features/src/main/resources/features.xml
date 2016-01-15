@@ -10,7 +10,7 @@
     <repository>mvn:org.opendaylight.controller/features-restconf/${controller.restconf.version}/xml/features</repository>
     <repository>mvn:org.opendaylight.openflowplugin/features-openflowplugin/${feature.openflowplugin.version}/xml/features</repository>
 
-    <feature name='odl-rolemanager-api' version='${project.version}' description='OpenDaylight :: rolemanager :: API'>
+    <feature name='odl-rolemanager-api' version='${project.version}' description='OpenDaylight :: Role Manager :: API'>
        <!-- <feature version='${yangtools.version}'>odl-yangtools-common</feature> -->
         <feature version='${mdsal.version}'>odl-mdsal-binding-base</feature>
         <feature version='${yangtools.version}'>odl-yangtools-common</feature>
@@ -20,7 +20,7 @@
         <bundle>mvn:org.opendaylight.rolemanager/rolemanager-api/${project.version}</bundle>
     </feature>
 
-    <feature name='odl-rolemanager-impl' version='${project.version}' description='OpenDaylight :: rolemanager :: Impl'>
+    <feature name='odl-rolemanager-impl' version='${project.version}' description='OpenDaylight :: Role Manager :: Impl'>
         <feature version='${controller.mdsal.version}'>odl-mdsal-broker</feature>
         <feature version='${controller.restconf.version}'>odl-restconf</feature>
         <feature version="${feature.openflowplugin.version}">odl-openflowplugin-flow-services</feature>

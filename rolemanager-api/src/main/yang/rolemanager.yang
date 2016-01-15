@@ -5,7 +5,7 @@ module rolemanager {
     namespace
       "http://netconfcentral.org/ns/rolemanager";
 
-    prefix lb;
+    prefix rm;
 
     organization "Netconf Central";
 
@@ -33,7 +33,7 @@ module rolemanager {
             value 1;
             description
               "The role manager knob position is up.
-                      No lb is being made now.";
+                      No rm is being made now.";
           }
           enum "down" {
             value 2;

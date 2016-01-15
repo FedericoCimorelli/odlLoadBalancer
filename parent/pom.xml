@@ -13,7 +13,7 @@
 
     <groupId>org.opendaylight.rolemanager</groupId>
     <artifactId>rolemanager-parent</artifactId>
-    <name>rolemanager parent</name>
+    <name>RoleManager parent</name>
     <version>0.0.4-SNAPSHOT</version>
     <packaging>pom</packaging>
 

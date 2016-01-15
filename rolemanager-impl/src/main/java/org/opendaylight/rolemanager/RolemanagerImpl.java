@@ -227,7 +227,7 @@ public class RolemanagerImpl implements BindingAwareProvider,
     @Override
     public Future<RpcResult<StartRolemanagerOutput>> startRolemanager(StartRolemanagerInput input) {
         LOG.info(TAG, "Starting Rolemanager...");
-        LOG.info(TAG, "Write loadbalancer status in datastore");
+        LOG.info(TAG, "Write rolemanager status in datastore");
         Rolemanager rolemanager = new RolemanagerBuilder().setRolemanagerStatus(RolemanagerStatus.Up).build();
         WriteTransaction tx = dataBroker.newWriteOnlyTransaction();
         tx.put(LogicalDatastoreType.OPERATIONAL, ROLEMANAGER_IID, rolemanager);
