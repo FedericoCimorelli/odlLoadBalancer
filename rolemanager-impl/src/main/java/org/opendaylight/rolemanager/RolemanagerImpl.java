@@ -69,7 +69,6 @@ public class RolemanagerImpl implements BindingAwareProvider,
     private ListenerRegistration<DataChangeListener> dcReg;
     private BindingAwareBroker.RpcRegistration<RolemanagerService> rpcReg;
     public static final InstanceIdentifier<Rolemanager> ROLEMANAGER_IID = InstanceIdentifier.builder(Rolemanager.class).build();
-    //private static final String DEFAULT_TOPOLOGY_ID = "flow:1";
 
 
 
@@ -219,55 +218,46 @@ public class RolemanagerImpl implements BindingAwareProvider,
 
     @Override
     public Future<RpcResult<SetSwitchRoleOutput>> setSwitchRole(SetSwitchRoleInput input) {
-        LOG.info(TAG, "Set switches role stated");
-        int role = 0;
-        try{
-            role = Integer.parseInt(input.getOfpRole()+"");
-        }catch(RuntimeException e){
-            LOG.error(TAG, "Error while parsing the request's role");
+        LOG.info(TAG, "Set switches role stated, requested role: "+input.getOfpRole()+"on dpIDs: "+input.getSwitchIds().toArray().toString());
+        String reqRole = input.getOfpRole();
+        if(!reqRole.equals("NOCHANGE") &&
+                !reqRole.equals("BECOMEMASTER") &&
+                !reqRole.equals("BECOMESLAVE")){
+            LOG.error(TAG, "Error while parsing the request's role, received: "+reqRole);
             SetSwitchRoleOutputBuilder swrob = new SetSwitchRoleOutputBuilder();
             swrob.setResponseCode(-1L);
             swrob.setResponseMessage("Error while parsing the request's role");
             return RpcResultBuilder.success(swrob.build()).buildFuture();
         }
-        /**
-         * no change to role
-         * NOCHANGE(0),
-         * promote current role to MASTER
-         * BECOMEMASTER(1)
-         * demote current role to SLAVE
-         * BECOMESLAVE(2)
-         */
-        if(role !=0 && input.getSwitchIds().size()>0){
-            RoleUtil.fireRoleChange(role, input.getSwitchIds());
+        if(input.getSwitchIds().size()==0){
+            LOG.warn(TAG, "Requested role change is empty dpIDs list, nothing to do...");
             SetSwitchRoleOutputBuilder swrob = new SetSwitchRoleOutputBuilder();
-            swrob.setResponseCode(0L);
-            swrob.setResponseMessage("Switch(es) role changed");
+            swrob.setResponseCode(-1L);
+            swrob.setResponseMessage("OK, empty dpIDs list");
             return RpcResultBuilder.success(swrob.build()).buildFuture();
         }
-        else{
-            if(role==0){
-                LOG.warn(TAG, "Requested role change is 0 (NOCHANGE role), nothing to do...");
-                SetSwitchRoleOutputBuilder swrob = new SetSwitchRoleOutputBuilder();
-                swrob.setResponseCode(0L);
-                swrob.setResponseMessage("OK, NOCHANGE role");
-                return RpcResultBuilder.success(swrob.build()).buildFuture();
-            }
-            else{
-                LOG.warn(TAG, "Requested role change is empty dpIDs list, nothing to do...");
-                SetSwitchRoleOutputBuilder swrob = new SetSwitchRoleOutputBuilder();
-                swrob.setResponseCode(0L);
-                swrob.setResponseMessage("OK, empty dpIDs list");
-                return RpcResultBuilder.success(swrob.build()).buildFuture();
-            }
-        }
+        //input valided -> fire role change
+        int ofpRole = 0;
+        if(reqRole.equals("BECOMEMASTER"))
+            ofpRole=1;
+        if(reqRole.equals("BECOMESLAVE"))
+            ofpRole=2;
+        RoleUtil.fireRoleChange(ofpRole, input.getSwitchIds());
+        SetSwitchRoleOutputBuilder swrob = new SetSwitchRoleOutputBuilder();
+        swrob.setResponseCode(0L);
+        swrob.setResponseMessage("Switch(es) role changed");
+        LOG.info(TAG, "Switch(es) role changed");
+        return RpcResultBuilder.success(swrob.build()).buildFuture();
     }
 
 
 
     @Override
     public Future<RpcResult<GetSwitchRoleOutput>> getSwitchRole(GetSwitchRoleInput input) {
-        LOG.info(TAG, "Getting switches roles started");
+        if(input.getSwitchIds().size()==0)
+            LOG.info(TAG, "Getting all switches roles started");
+        else
+            LOG.info(TAG, "Getting roles for the following OF swithes: "+input.getSwitchIds().toArray().toString());
         List<String> dpRoles = new ArrayList<String>();
         Map<String, String> swsRoles = RoleUtil.getSwitchesRoles();
         if(swsRoles==null){
@@ -277,13 +267,27 @@ public class RolemanagerImpl implements BindingAwareProvider,
             gsrob.setResponseMessage(new ArrayList<String>());
             return RpcResultBuilder.success(gsrob.build()).buildFuture();
         }
+        //return all...
+        if(input.getSwitchIds().size()==0){
+            for(String r : swsRoles.keySet()){
+                dpRoles.add(r.toString()+":"+swsRoles.get(r));
+            }
+            GetSwitchRoleOutputBuilder gsrob = new GetSwitchRoleOutputBuilder();
+            gsrob.setResponseCode(0L);
+            gsrob.setResponseMessage(dpRoles);
+            LOG.info(TAG, "Get switches role completed");
+            return RpcResultBuilder.success(gsrob.build()).buildFuture();
+        }
+        //selective return...
         for(String r : swsRoles.keySet()){
-            //dpRoles.add(r.toString()+":"+getRoleIntValue(swsRoles.get(r)));
-            dpRoles.add(r.toString()+":"+swsRoles.get(r));
+            if(input.getSwitchIds().contains(r.toString())){
+                dpRoles.add(r.toString()+":"+swsRoles.get(r));
+            }
         }
         GetSwitchRoleOutputBuilder gsrob = new GetSwitchRoleOutputBuilder();
         gsrob.setResponseCode(0L);
         gsrob.setResponseMessage(dpRoles);
+        LOG.info(TAG, "Get switches role completed");
         return RpcResultBuilder.success(gsrob.build()).buildFuture();
     }
 
