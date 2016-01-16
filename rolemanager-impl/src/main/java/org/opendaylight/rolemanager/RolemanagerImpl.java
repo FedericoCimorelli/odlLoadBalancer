@@ -46,13 +46,6 @@ import org.opendaylight.yang.gen.v1.http.netconfcentral.org.ns.rolemanager.rev15
 import org.opendaylight.yang.gen.v1.http.netconfcentral.org.ns.rolemanager.rev150901.StartRolemanagerOutputBuilder;
 import org.opendaylight.yang.gen.v1.http.netconfcentral.org.ns.rolemanager.rev150901.StopRolemanagerOutput;
 import org.opendaylight.yang.gen.v1.http.netconfcentral.org.ns.rolemanager.rev150901.StopRolemanagerOutputBuilder;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.NodeConnectorRemoved;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.NodeConnectorUpdated;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.NodeRemoved;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.NodeUpdated;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.OpendaylightInventoryListener;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.packet.service.rev130709.PacketProcessingListener;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.packet.service.rev130709.PacketReceived;
 import org.opendaylight.yangtools.concepts.ListenerRegistration;
 import org.opendaylight.yangtools.yang.binding.DataObject;
 import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
@@ -62,9 +55,12 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 
+
 public class RolemanagerImpl implements BindingAwareProvider,
-        DataChangeListener, AutoCloseable, RolemanagerService,
-        OpendaylightInventoryListener, PacketProcessingListener {
+        DataChangeListener,
+        AutoCloseable,
+        RolemanagerService{
+
 
     private static final Logger LOG = LoggerFactory.getLogger(RolemanagerImpl.class);
     private static String TAG = "Rolemanager";
@@ -73,7 +69,7 @@ public class RolemanagerImpl implements BindingAwareProvider,
     private ListenerRegistration<DataChangeListener> dcReg;
     private BindingAwareBroker.RpcRegistration<RolemanagerService> rpcReg;
     public static final InstanceIdentifier<Rolemanager> ROLEMANAGER_IID = InstanceIdentifier.builder(Rolemanager.class).build();
-    private static final String DEFAULT_TOPOLOGY_ID = "flow:1";
+    //private static final String DEFAULT_TOPOLOGY_ID = "flow:1";
 
 
 
@@ -114,81 +110,6 @@ public class RolemanagerImpl implements BindingAwareProvider,
                     dataObject);
         }
     }
-
-
-
-    @Override
-    public void onNodeConnectorRemoved(NodeConnectorRemoved arg0) {
-        String s = "ROLEMANAGER" + arg0.toString();
-        LOG.info(TAG, s);
-    }
-
-
-
-    @Override
-    public void onNodeConnectorUpdated(NodeConnectorUpdated arg0) {
-        String s = "ROLEMANAGER" + arg0.toString();
-        LOG.info(TAG, s);
-    }
-
-
-
-    @Override
-    public void onNodeRemoved(NodeRemoved arg0) {
-        String s = "ROLEMANAGER" + arg0.toString();
-        LOG.info(TAG, s);
-    }
-
-
-
-    @Override
-    public void onNodeUpdated(NodeUpdated arg0) {
-        String s = "ROLEMANAGER" + arg0.toString();
-        LOG.info(TAG, s);
-    }
-
-
-
-    @Override
-    public void onPacketReceived(PacketReceived arg0) {
-        String s = "ROLEMANAGER" + arg0.toString();
-        LOG.info(TAG, s);
-    }
-
-
-
-/*    private void testAccessDataInMdSal() {
-        LOG.info("Test access data in MD-SAL - start");
-        InstanceIdentifier<Topology> topologyInstanceIdentifier = InstanceIdentifier.builder(
-                NetworkTopology.class).child(
-                        Topology.class, new TopologyKey(new TopologyId(DEFAULT_TOPOLOGY_ID))).build();
-        Topology topology = null;
-        ReadOnlyTransaction readOnlyTransaction = dataBroker.newReadOnlyTransaction();
-        try {
-            Optional<Topology> topologyOptional = readOnlyTransaction.read(
-                    LogicalDatastoreType.OPERATIONAL,
-                    topologyInstanceIdentifier).get();
-            if (topologyOptional.isPresent()) {
-                topology = topologyOptional.get();
-                LOG.info("Test access data in MD-SAL - topology is present");
-            }
-        } catch (Exception e) {
-            LOG.error("Error reading topology {}", topologyInstanceIdentifier);
-            readOnlyTransaction.close();
-            throw new RuntimeException("Error reading from operational store, topology : " + topologyInstanceIdentifier, e);
-        }
-        readOnlyTransaction.close();
-        if (topology == null) {
-            LOG.info("Test access data in MD-SAL - topology is null");
-        }
-
-        List<Node> nodes = topology.getNode();
-        for(Node n : nodes){
-            LOG.info(n.toString());
-        }
-        LOG.info("Test access data in MD-SAL - end");
-    }*/
-
 
 
 
@@ -299,10 +220,6 @@ public class RolemanagerImpl implements BindingAwareProvider,
     @Override
     public Future<RpcResult<SetSwitchRoleOutput>> setSwitchRole(SetSwitchRoleInput input) {
         LOG.info(TAG, "Set switches role stated");
-        //
-        //TODO input validation
-        //
-        //
         int role = 0;
         try{
             role = Integer.parseInt(input.getOfpRole()+"");

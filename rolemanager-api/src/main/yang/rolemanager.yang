@@ -110,9 +110,9 @@ module rolemanager {
         description "Sets the role on the switch ids in input";
         input {
             leaf ofp-role{
-                type uint32;
-                description "The role to be triggered (1:OFPxyz, 2:OFP...)";
-                default 1;
+                type string;
+                description "The role to be triggered, choice in [NOCHANGE, OFPCRROLEEQUAL, OFPCRROLEMASTER, OFPCRROLESLAVE]";
+                default "NOCHANGE";
                 }
             leaf-list switch-ids{
                 type string;
@@ -152,8 +152,8 @@ module rolemanager {
                 }
             leaf-list response-message{
                 type string;
-                description "Response message in 'dpID:role' format";
-                default "ND";
+                description "Response message in 'dpID:OFPCRROLE' format";
+                default "";
             }
         }
     }
