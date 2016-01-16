@@ -280,8 +280,17 @@ public class RolemanagerImpl implements BindingAwareProvider,
         }
         //selective return...
         for(String r : swsRoles.keySet()){
+            boolean found = false;
             if(input.getSwitchIds().contains(r.toString())){
+                found = true;
                 dpRoles.add(r.toString()+":"+swsRoles.get(r));
+            }
+            if(!found){
+                LOG.error(TAG, "Error while retieving the roles, switched IDs not found");
+                GetSwitchRoleOutputBuilder gsrob = new GetSwitchRoleOutputBuilder();
+                gsrob.setResponseCode(-1L);
+                gsrob.setResponseMessage(new ArrayList<String>());
+                return RpcResultBuilder.success(gsrob.build()).buildFuture();
             }
         }
         GetSwitchRoleOutputBuilder gsrob = new GetSwitchRoleOutputBuilder();
