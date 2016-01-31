@@ -111,7 +111,7 @@ module rolemanager {
         input {
             leaf ofp-role{
                 type string;
-                description "The role to be triggered, choice in [NOCHANGE, BECOMEMASTER, BECOMESLAVE]";
+                description "The role to be triggered, choice in [NOCHANGE, BECOMEMASTER, BECOMESLAVE, BECOMEEQUAL]";
                 default "NOCHANGE";
                 }
             leaf-list switch-ids{

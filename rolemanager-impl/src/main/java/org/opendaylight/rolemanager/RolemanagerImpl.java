@@ -242,6 +242,8 @@ public class RolemanagerImpl implements BindingAwareProvider,
             ofpRole=1;
         if(reqRole.equals("BECOMESLAVE"))
             ofpRole=2;
+        if(reqRole.equals("BECOMEEQUAL"))
+            ofpRole=3;
         RoleUtil.fireRoleChange(ofpRole, input.getSwitchIds());
         SetSwitchRoleOutputBuilder swrob = new SetSwitchRoleOutputBuilder();
         swrob.setResponseCode(0L);
