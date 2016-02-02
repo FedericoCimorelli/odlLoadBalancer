@@ -222,7 +222,8 @@ public class RolemanagerImpl implements BindingAwareProvider,
         String reqRole = input.getOfpRole();
         if(!reqRole.equals("NOCHANGE") &&
                 !reqRole.equals("BECOMEMASTER") &&
-                !reqRole.equals("BECOMESLAVE")){
+                !reqRole.equals("BECOMESLAVE") &&
+                !reqRole.equals("BECOMEEQUAL")){
             LOG.error(TAG, "Error while parsing the request's role, received: "+reqRole);
             SetSwitchRoleOutputBuilder swrob = new SetSwitchRoleOutputBuilder();
             swrob.setResponseCode(-1L);
