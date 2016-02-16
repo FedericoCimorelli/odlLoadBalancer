@@ -11,6 +11,7 @@ package org.opendaylight.rolemanager;
 import com.google.common.base.Optional;
 import com.google.common.util.concurrent.FutureCallback;
 import com.google.common.util.concurrent.Futures;
+import com.google.common.util.concurrent.ListenableFuture;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -34,6 +35,9 @@ import org.opendaylight.yang.gen.v1.http.netconfcentral.org.ns.rolemanager.rev15
 import org.opendaylight.yang.gen.v1.http.netconfcentral.org.ns.rolemanager.rev150901.GetSwitchRoleInput;
 import org.opendaylight.yang.gen.v1.http.netconfcentral.org.ns.rolemanager.rev150901.GetSwitchRoleOutput;
 import org.opendaylight.yang.gen.v1.http.netconfcentral.org.ns.rolemanager.rev150901.GetSwitchRoleOutputBuilder;
+import org.opendaylight.yang.gen.v1.http.netconfcentral.org.ns.rolemanager.rev150901.GetSwitchStatisticsInput;
+import org.opendaylight.yang.gen.v1.http.netconfcentral.org.ns.rolemanager.rev150901.GetSwitchStatisticsOutput;
+import org.opendaylight.yang.gen.v1.http.netconfcentral.org.ns.rolemanager.rev150901.GetSwitchStatisticsOutputBuilder;
 import org.opendaylight.yang.gen.v1.http.netconfcentral.org.ns.rolemanager.rev150901.Rolemanager;
 import org.opendaylight.yang.gen.v1.http.netconfcentral.org.ns.rolemanager.rev150901.Rolemanager.RolemanagerStatus;
 import org.opendaylight.yang.gen.v1.http.netconfcentral.org.ns.rolemanager.rev150901.RolemanagerBuilder;
@@ -46,6 +50,11 @@ import org.opendaylight.yang.gen.v1.http.netconfcentral.org.ns.rolemanager.rev15
 import org.opendaylight.yang.gen.v1.http.netconfcentral.org.ns.rolemanager.rev150901.StartRolemanagerOutputBuilder;
 import org.opendaylight.yang.gen.v1.http.netconfcentral.org.ns.rolemanager.rev150901.StopRolemanagerOutput;
 import org.opendaylight.yang.gen.v1.http.netconfcentral.org.ns.rolemanager.rev150901.StopRolemanagerOutputBuilder;
+import org.opendaylight.yang.gen.v1.http.netconfcentral.org.ns.rolemanager.rev150901.get._switch.statistics.output.OfNode;
+import org.opendaylight.yang.gen.v1.http.netconfcentral.org.ns.rolemanager.rev150901.get._switch.statistics.output.OfNodeBuilder;
+import org.opendaylight.yang.gen.v1.http.netconfcentral.org.ns.rolemanager.rev150901.get._switch.statistics.output.ofnode.Counter;
+import org.opendaylight.yang.gen.v1.http.netconfcentral.org.ns.rolemanager.rev150901.get._switch.statistics.output.ofnode.CounterBuilder;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.nodes.statistics.rev160114.OfStatistics;
 import org.opendaylight.yangtools.concepts.ListenerRegistration;
 import org.opendaylight.yangtools.yang.binding.DataObject;
 import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
@@ -69,7 +78,7 @@ public class RolemanagerImpl implements BindingAwareProvider,
     private ListenerRegistration<DataChangeListener> dcReg;
     private BindingAwareBroker.RpcRegistration<RolemanagerService> rpcReg;
     public static final InstanceIdentifier<Rolemanager> ROLEMANAGER_IID = InstanceIdentifier.builder(Rolemanager.class).build();
-
+    public List<OfNode> lofn = new ArrayList<OfNode>();
 
 
     @Override
@@ -301,6 +310,63 @@ public class RolemanagerImpl implements BindingAwareProvider,
         gsrob.setResponseMessage(dpRoles);
         LOG.info(TAG, "Get switches role completed");
         return RpcResultBuilder.success(gsrob.build()).buildFuture();
+    }
+
+
+
+    @Override
+    public Future<RpcResult<GetSwitchStatisticsOutput>> getSwitchStatistics(GetSwitchStatisticsInput input) {
+        try{
+            LOG.info("Reading OF nodes stats from the datastore...");
+            final InstanceIdentifier<OfStatistics> NODEOFSTATS_IID = InstanceIdentifier.builder(OfStatistics.class).build();
+            ReadOnlyTransaction readTx = dataBroker.newReadOnlyTransaction();
+            ListenableFuture<Optional<OfStatistics>> dataFuture = readTx.read(LogicalDatastoreType.OPERATIONAL, NODEOFSTATS_IID);
+
+            Futures.addCallback(dataFuture, new FutureCallback<Optional<OfStatistics>>() {
+                @Override
+                public void onSuccess(final Optional<OfStatistics> result) {
+                    if(result.isPresent()) {
+                        OfStatistics ofs = result.get();
+                        lofn = new ArrayList<OfNode>();
+                        OfNodeBuilder ofn = null;
+                        for(org.opendaylight.yang.gen.v1.urn.opendaylight.nodes.statistics.rev160114.ofstatistics.OfNode n : ofs.getOfNode()){
+                                CounterBuilder cb = new CounterBuilder();
+                                List<Counter> lc = new ArrayList<Counter>();
+                                for(org.opendaylight.yang.gen.v1.urn.opendaylight.nodes.statistics.rev160114.ofstatistics.ofnode.Counter c : n.getCounter()){
+                                    cb.setCounterCount(c.getCounterCount())
+                                        .setCounterFirstPacketTs(c.getCounterFirstPacketTs())
+                                        .setLastCounterCount(c.getLastCounterCount())
+                                        .setLastCounterFirstPacketTs(c.getLastCounterFirstPacketTs())
+                                        .setMsgType(c.getMsgType());
+                                    lc.add(cb.build());
+                                }
+                                ofn = new OfNodeBuilder();
+                                ofn.setNodeId(n.getNodeId());
+                                ofn.setCounter(lc);
+                        }
+                        lofn.add(ofn.build());
+                    }
+                    else {
+                        LOG.info("OF Node stats not present into datastore");
+                    }
+                }
+                @Override
+                public void onFailure(final Throwable t) {
+                        LOG.info("Failed when reading from datastore");
+                }
+            });
+            GetSwitchStatisticsOutputBuilder gsso = new GetSwitchStatisticsOutputBuilder();
+            gsso.setResponseCode(0L);
+            gsso.setOfNode(lofn);
+            return RpcResultBuilder.success(gsso.build()).buildFuture();
+        }
+        catch(Exception e){
+            LOG.error(e.getMessage());
+            GetSwitchStatisticsOutputBuilder gsso = new GetSwitchStatisticsOutputBuilder();
+            gsso.setResponseCode(-1L);
+            gsso.setOfNode(new ArrayList<OfNode>());
+            return RpcResultBuilder.success(gsso.build()).buildFuture();
+        }
     }
 
 

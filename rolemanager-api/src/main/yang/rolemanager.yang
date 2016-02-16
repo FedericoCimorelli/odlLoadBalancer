@@ -153,9 +153,57 @@ module rolemanager {
             leaf-list response-message{
                 type string;
                 description "Response message in 'dpID:OFPCRROLE' format";
-                default "";
             }
         }
     }
+
+    grouping msgCount{
+        leaf lastCounterFirstPacketTs{
+            type uint64;
+            default 0;
+            }
+        leaf lastCounterCount{
+            type uint64;
+            default 0;
+            }
+        leaf counterFirstPacketTs{
+            type uint64;
+            default 0;
+            }
+        leaf counterCount{
+            type uint64;
+            default 0;
+            }
+        }
+
+
+    rpc get-switch-statistics{
+        description "Returns the OpenFlow statistics on the switch ids in input";
+        input {
+            leaf-list switch-ids{
+                type string;
+                description "The switches of interest";
+                min-elements 1;
+            }
+        }
+        output {
+            leaf response-code {
+                type uint32;
+                description "Response code, 0 ok, <0 ko";
+                default 0;
+                }
+            list ofNode{
+                leaf nodeId{
+                    type string;
+                    }
+                list counter{
+                    leaf msgType{
+                        type string;
+                        }
+                    uses msgCount;
+                    }
+                }
+            }
+        }
 
   }
