@@ -315,7 +315,7 @@ public class RolemanagerImpl implements BindingAwareProvider,
 
 
     @Override
-    public Future<RpcResult<GetSwitchStatisticsOutput>> getSwitchStatistics(GetSwitchStatisticsInput input) {
+    public Future<RpcResult<GetSwitchStatisticsOutput>> getSwitchStatistics(final GetSwitchStatisticsInput input) {
         try{
             LOG.info("Reading OF nodes stats from the datastore...");
             final InstanceIdentifier<OfStatistics> NODEOFSTATS_IID = InstanceIdentifier.builder(OfStatistics.class).build();
@@ -329,20 +329,41 @@ public class RolemanagerImpl implements BindingAwareProvider,
                         OfStatistics ofs = result.get();
                         lofn = new ArrayList<OfNode>();
                         OfNodeBuilder ofn = null;
-                        for(org.opendaylight.yang.gen.v1.urn.opendaylight.nodes.statistics.rev160114.ofstatistics.OfNode n : ofs.getOfNode()){
-                                CounterBuilder cb = new CounterBuilder();
-                                List<Counter> lc = new ArrayList<Counter>();
-                                for(org.opendaylight.yang.gen.v1.urn.opendaylight.nodes.statistics.rev160114.ofstatistics.ofnode.Counter c : n.getCounter()){
-                                    cb.setCounterCount(c.getCounterCount())
-                                        .setCounterFirstPacketTs(c.getCounterFirstPacketTs())
-                                        .setLastCounterCount(c.getLastCounterCount())
-                                        .setLastCounterFirstPacketTs(c.getLastCounterFirstPacketTs())
-                                        .setMsgType(c.getMsgType());
-                                    lc.add(cb.build());
+                        if(input.getSwitchIds().size()==0){
+                            for(org.opendaylight.yang.gen.v1.urn.opendaylight.nodes.statistics.rev160114.ofstatistics.OfNode n : ofs.getOfNode()){
+                                    CounterBuilder cb = new CounterBuilder();
+                                    List<Counter> lc = new ArrayList<Counter>();
+                                    for(org.opendaylight.yang.gen.v1.urn.opendaylight.nodes.statistics.rev160114.ofstatistics.ofnode.Counter c : n.getCounter()){
+                                        cb.setCounterCount(c.getCounterCount())
+                                            .setCounterFirstPacketTs(c.getCounterFirstPacketTs())
+                                            .setLastCounterCount(c.getLastCounterCount())
+                                            .setLastCounterFirstPacketTs(c.getLastCounterFirstPacketTs())
+                                            .setMsgType(c.getMsgType());
+                                        lc.add(cb.build());
+                                    }
+                                    ofn = new OfNodeBuilder();
+                                    ofn.setNodeId(n.getNodeId());
+                                    ofn.setCounter(lc);
                                 }
-                                ofn = new OfNodeBuilder();
-                                ofn.setNodeId(n.getNodeId());
-                                ofn.setCounter(lc);
+                        }
+                        else{
+                            for(org.opendaylight.yang.gen.v1.urn.opendaylight.nodes.statistics.rev160114.ofstatistics.OfNode n : ofs.getOfNode()){
+                                if(input.getSwitchIds().contains(n.getNodeId())){
+                                    CounterBuilder cb = new CounterBuilder();
+                                    List<Counter> lc = new ArrayList<Counter>();
+                                    for(org.opendaylight.yang.gen.v1.urn.opendaylight.nodes.statistics.rev160114.ofstatistics.ofnode.Counter c : n.getCounter()){
+                                        cb.setCounterCount(c.getCounterCount())
+                                            .setCounterFirstPacketTs(c.getCounterFirstPacketTs())
+                                            .setLastCounterCount(c.getLastCounterCount())
+                                            .setLastCounterFirstPacketTs(c.getLastCounterFirstPacketTs())
+                                            .setMsgType(c.getMsgType());
+                                        lc.add(cb.build());
+                                    }
+                                    ofn = new OfNodeBuilder();
+                                    ofn.setNodeId(n.getNodeId());
+                                    ofn.setCounter(lc);
+                                }
+                            }
                         }
                         lofn.add(ofn.build());
                     }
