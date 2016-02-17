@@ -331,20 +331,21 @@ public class RolemanagerImpl implements BindingAwareProvider,
                         OfNodeBuilder ofn = null;
                         if(input.getSwitchIds().size()==0){
                             for(org.opendaylight.yang.gen.v1.urn.opendaylight.nodes.statistics.rev160114.ofstatistics.OfNode n : ofs.getOfNode()){
-                                    CounterBuilder cb = new CounterBuilder();
-                                    List<Counter> lc = new ArrayList<Counter>();
-                                    for(org.opendaylight.yang.gen.v1.urn.opendaylight.nodes.statistics.rev160114.ofstatistics.ofnode.Counter c : n.getCounter()){
-                                        cb.setCounterCount(c.getCounterCount())
-                                            .setCounterFirstPacketTs(c.getCounterFirstPacketTs())
-                                            .setLastCounterCount(c.getLastCounterCount())
-                                            .setLastCounterFirstPacketTs(c.getLastCounterFirstPacketTs())
-                                            .setMsgType(c.getMsgType());
-                                        lc.add(cb.build());
-                                    }
-                                    ofn = new OfNodeBuilder();
-                                    ofn.setNodeId(n.getNodeId());
-                                    ofn.setCounter(lc);
+                                CounterBuilder cb = new CounterBuilder();
+                                List<Counter> lc = new ArrayList<Counter>();
+                                for(org.opendaylight.yang.gen.v1.urn.opendaylight.nodes.statistics.rev160114.ofstatistics.ofnode.Counter c : n.getCounter()){
+                                    cb.setCounterCount(c.getCounterCount())
+                                        .setCounterFirstPacketTs(c.getCounterFirstPacketTs())
+                                        .setLastCounterCount(c.getLastCounterCount())
+                                        .setLastCounterFirstPacketTs(c.getLastCounterFirstPacketTs())
+                                        .setMsgType(c.getMsgType());
+                                    lc.add(cb.build());
                                 }
+                                ofn = new OfNodeBuilder();
+                                ofn.setNodeId(n.getNodeId());
+                                ofn.setCounter(lc);
+                                lofn.add(ofn.build());
+                            }
                         }
                         else{
                             for(org.opendaylight.yang.gen.v1.urn.opendaylight.nodes.statistics.rev160114.ofstatistics.OfNode n : ofs.getOfNode()){
@@ -362,10 +363,11 @@ public class RolemanagerImpl implements BindingAwareProvider,
                                     ofn = new OfNodeBuilder();
                                     ofn.setNodeId(n.getNodeId());
                                     ofn.setCounter(lc);
+                                    lofn.add(ofn.build());
+                                    break;
                                 }
                             }
                         }
-                        lofn.add(ofn.build());
                     }
                     else {
                         LOG.info("OF Node stats not present into datastore");
