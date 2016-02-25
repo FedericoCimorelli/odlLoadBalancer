@@ -58,7 +58,16 @@
       <type>xml</type>
       <scope>runtime</scope>
     </dependency>
- <!--   <dependency>
+  <!--   <dependency>
+      <groupId>org.sdnhub.odl.tutorial</groupId>
+      <artifactId>features</artifactId>
+      <version>1.0.0-SNAPSHOT</version>
+      <type>xml</type>
+      <classifier>features</classifier>
+      <scope>runtime</scope>
+    </dependency>
+
+   <dependency>
         <groupId>org.opendaylight.openflowplugin</groupId>
         <artifactId>openflowplugin-artifacts</artifactId>
         <version>${openflowplugin.version}</version>
