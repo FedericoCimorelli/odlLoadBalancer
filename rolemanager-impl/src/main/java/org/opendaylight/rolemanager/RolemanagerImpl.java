@@ -79,7 +79,7 @@ public class RolemanagerImpl implements BindingAwareProvider,
     public void close() throws Exception {
         dcReg.close();
         rpcReg.close();
-        LOG.info(TAG, "Registrations closed");
+        LOG.info("Registrations closed");
     }
 
 
@@ -94,7 +94,7 @@ public class RolemanagerImpl implements BindingAwareProvider,
         rpcReg = session.addRpcImplementation(RolemanagerService.class, this);
         initRolemanagerOperational();
         initRolemanagerConfiguration();
-        LOG.info(TAG, "onSessionInitiated: initialization done");
+        LOG.info("onSessionInitiated: initialization done");
     }
 
 
@@ -105,10 +105,10 @@ public class RolemanagerImpl implements BindingAwareProvider,
         DataObject dataObject = change.getUpdatedSubtree();
         if (dataObject instanceof Rolemanager) {
             Rolemanager rolemanager = (Rolemanager) dataObject;
-            LOG.info(TAG, "onDataChanged - new Rolemanager config: {}",
+            LOG.info("onDataChanged - new Rolemanager config: {}",
                     rolemanager);
         } else {
-            LOG.warn(TAG, "onDataChanged - not instance of Rolemanager {}",
+            LOG.warn("onDataChanged - not instance of Rolemanager {}",
                     dataObject);
         }
     }
@@ -149,8 +149,8 @@ public class RolemanagerImpl implements BindingAwareProvider,
 
     @Override
     public Future<RpcResult<StartRolemanagerOutput>> startRolemanager(StartRolemanagerInput input) {
-        LOG.info(TAG, "Starting Rolemanager...");
-        LOG.info(TAG, "Write rolemanager status in datastore");
+        LOG.info("Starting Rolemanager...");
+        LOG.info("Write rolemanager status in datastore");
         Rolemanager rolemanager = new RolemanagerBuilder().setRolemanagerStatus(RolemanagerStatus.Up).build();
         WriteTransaction tx = dataBroker.newWriteOnlyTransaction();
         tx.put(LogicalDatastoreType.OPERATIONAL, ROLEMANAGER_IID, rolemanager);
@@ -172,25 +172,25 @@ public class RolemanagerImpl implements BindingAwareProvider,
 
     @Override
     public Future<RpcResult<GetRolemanagerStatusOutput>> getRolemanagerStatus() {
-        LOG.info(TAG, "Get Rolemanager status started...");
-        LOG.info(TAG, "Reading Rolemanager status");
+        LOG.info("Get Rolemanager status started...");
+        LOG.info("Reading Rolemanager status");
         ReadOnlyTransaction tx = dataBroker.newReadOnlyTransaction();
         Optional<Rolemanager> rolemanager = null;
         GetRolemanagerStatusOutputBuilder glbsob = new GetRolemanagerStatusOutputBuilder();
         try {
             rolemanager = tx.read(LogicalDatastoreType.OPERATIONAL, ROLEMANAGER_IID).get();
         } catch (InterruptedException | ExecutionException e) {
-            LOG.error(TAG, "Error when retrieving the Rolemanager status");
+            LOG.error("Error when retrieving the Rolemanager status");
             glbsob.setResponseCode(-1L);
         }
         if(rolemanager!=null && rolemanager.isPresent()){
-            LOG.error(TAG, "Rolemanager status null or not present");
+            LOG.error("Rolemanager status null or not present");
             long status = rolemanager.get().getRolemanagerStatus().getIntValue();
             glbsob.setResponseCode(status);
         }
         else
             glbsob.setResponseCode(-1L);
-        LOG.info(TAG, "Returing Rolemanager status");
+        LOG.info("Returing Rolemanager status");
         return RpcResultBuilder.success(glbsob.build()).buildFuture();
     }
 
@@ -201,7 +201,7 @@ public class RolemanagerImpl implements BindingAwareProvider,
 
     @Override
     public Future<RpcResult<StopRolemanagerOutput>> stopRolemanager() {
-        LOG.info(TAG, "Stopping Rolemanager...");
+        LOG.info("Stopping Rolemanager...");
         Rolemanager rolemanager = new RolemanagerBuilder().setRolemanagerStatus(RolemanagerStatus.Down).build();
         WriteTransaction tx = dataBroker.newWriteOnlyTransaction();
         tx.put(LogicalDatastoreType.OPERATIONAL, ROLEMANAGER_IID, rolemanager);
@@ -212,7 +212,7 @@ public class RolemanagerImpl implements BindingAwareProvider,
         //
         StopRolemanagerOutputBuilder slbob = new StopRolemanagerOutputBuilder();
         slbob.setResponseCode(1L);
-        LOG.info(TAG, "Rolemanager stopped!");
+        LOG.info("Rolemanager stopped!");
         return RpcResultBuilder.success(slbob.build()).buildFuture();
     }
 
@@ -221,20 +221,22 @@ public class RolemanagerImpl implements BindingAwareProvider,
 
     @Override
     public Future<RpcResult<SetSwitchRoleOutput>> setSwitchRole(SetSwitchRoleInput input) {
-        LOG.info(TAG, "Set switches role stated, requested role: "+input.getOfpRole()+"on dpIDs: "+input.getSwitchIds().toArray().toString());
+        String s = "Set switches role stated, requested role: "+input.getOfpRole()+"on dpIDs: "+input.getSwitchIds().toArray().toString();
+        LOG.info(s);
         String reqRole = input.getOfpRole();
         if(!reqRole.equals("NOCHANGE") &&
                 !reqRole.equals("BECOMEMASTER") &&
                 !reqRole.equals("BECOMESLAVE") &&
                 !reqRole.equals("BECOMEEQUAL")){
-            LOG.error(TAG, "Error while parsing the request's role, received: "+reqRole);
+            String ss = "Error while parsing the request's role, received: "+reqRole;
+            LOG.error(ss);
             SetSwitchRoleOutputBuilder swrob = new SetSwitchRoleOutputBuilder();
             swrob.setResponseCode(-1L);
             swrob.setResponseMessage("Error while parsing the request's role");
             return RpcResultBuilder.success(swrob.build()).buildFuture();
         }
         if(input.getSwitchIds().size()==0){
-            LOG.warn(TAG, "Requested role change is empty dpIDs list, nothing to do...");
+            LOG.warn("Requested role change is empty dpIDs list, nothing to do...");
             SetSwitchRoleOutputBuilder swrob = new SetSwitchRoleOutputBuilder();
             swrob.setResponseCode(-1L);
             swrob.setResponseMessage("OK, empty dpIDs list");
@@ -252,7 +254,7 @@ public class RolemanagerImpl implements BindingAwareProvider,
         SetSwitchRoleOutputBuilder swrob = new SetSwitchRoleOutputBuilder();
         swrob.setResponseCode(0L);
         swrob.setResponseMessage("Switch(es) role changed");
-        LOG.info(TAG, "Switch(es) role changed");
+        LOG.info("Switch(es) role changed");
         return RpcResultBuilder.success(swrob.build()).buildFuture();
     }
 
@@ -261,13 +263,15 @@ public class RolemanagerImpl implements BindingAwareProvider,
     @Override
     public Future<RpcResult<GetSwitchRoleOutput>> getSwitchRole(GetSwitchRoleInput input) {
         if(input.getSwitchIds().size()==0)
-            LOG.info(TAG, "Getting all switches roles started");
-        else
-            LOG.info(TAG, "Getting roles for the following OF swithes: "+input.getSwitchIds().toArray().toString());
+            LOG.info("Getting all switches roles started");
+        else{
+            String a = "Getting roles for the following OF swithes: "+input.getSwitchIds().toArray().toString();
+            LOG.info(a);
+        }
         List<String> dpRoles = new ArrayList<String>();
         Map<String, String> swsRoles = RoleUtil.getSwitchesRoles();
         if(swsRoles==null){
-            LOG.error(TAG, "Error while retieving the switches roles");
+            LOG.error("Error while retieving the switches roles");
             GetSwitchRoleOutputBuilder gsrob = new GetSwitchRoleOutputBuilder();
             gsrob.setResponseCode(-1L);
             gsrob.setResponseMessage(new ArrayList<String>());
@@ -281,7 +285,7 @@ public class RolemanagerImpl implements BindingAwareProvider,
             GetSwitchRoleOutputBuilder gsrob = new GetSwitchRoleOutputBuilder();
             gsrob.setResponseCode(0L);
             gsrob.setResponseMessage(dpRoles);
-            LOG.info(TAG, "Get switches role completed");
+            LOG.info("Get switches role completed");
             return RpcResultBuilder.success(gsrob.build()).buildFuture();
         }
         //selective return...
@@ -292,7 +296,7 @@ public class RolemanagerImpl implements BindingAwareProvider,
                 dpRoles.add(r.toString()+":"+swsRoles.get(r));
             }
             if(!found){
-                LOG.error(TAG, "Error while retieving the roles, switched IDs not found");
+                LOG.error("Error while retieving the roles, switched IDs not found");
                 GetSwitchRoleOutputBuilder gsrob = new GetSwitchRoleOutputBuilder();
                 gsrob.setResponseCode(-1L);
                 gsrob.setResponseMessage(new ArrayList<String>());
@@ -302,7 +306,7 @@ public class RolemanagerImpl implements BindingAwareProvider,
         GetSwitchRoleOutputBuilder gsrob = new GetSwitchRoleOutputBuilder();
         gsrob.setResponseCode(0L);
         gsrob.setResponseMessage(dpRoles);
-        LOG.info(TAG, "Get switches role completed");
+        LOG.info("Get switches role completed");
         return RpcResultBuilder.success(gsrob.build()).buildFuture();
     }
 
@@ -392,12 +396,14 @@ public class RolemanagerImpl implements BindingAwareProvider,
     @Override
     public Future<RpcResult<GetSwitchStatsOutput>> getSwitchStats(GetSwitchStatsInput input) {
         if(input.getSwitchIds().size()==0)
-            LOG.info(TAG, "Getting all switches stats started");
-        else
-            LOG.info(TAG, "Getting stats for the following OF swithes: "+input.getSwitchIds().toArray().toString());
+            LOG.info("Getting all switches stats started");
+        else{
+            String s = "Getting stats for the following OF swithes: "+input.getSwitchIds().toArray().toString();
+            LOG.info(s);
+        }
         List<String> dpStats = new ArrayList<String>();
         if(StatisticsTempData.OFNodesStatsCounters==null){
-            LOG.error(TAG, "Error while retieving the switches stats");
+            LOG.error("Error while retieving the switches stats");
             GetSwitchStatsOutputBuilder gsrob = new GetSwitchStatsOutputBuilder();
             gsrob.setResponseCode(-1L);
             gsrob.setResponseMessage(new ArrayList<String>());
@@ -405,26 +411,28 @@ public class RolemanagerImpl implements BindingAwareProvider,
         }
         //return all...
         if(input.getSwitchIds().size()==0){
-            for(String r : StatisticsTempData.OFNodesStatsCounters.keySet()){
+           for(String r : StatisticsTempData.OFNodesStatsCounters.keySet()){
+                LOG.info(StatisticsTempData.OFNodesStatsCounters.get(r).toString());
                 OFNodeStatsCounters ns = StatisticsTempData.OFNodesStatsCounters.get(r);
                 dpStats.add(r.toString()+":"+ns.getCountSend()+":"+ns.getTsLastSend()+":"+ns.getCountReceived()+":"+ns.getTsLastReceived());
             }
             GetSwitchStatsOutputBuilder sb = new GetSwitchStatsOutputBuilder();
             sb.setResponseCode(0L);
             sb.setResponseMessage(dpStats);
-            LOG.info(TAG, "Get switches stats completed");
+            LOG.info("Get switches stats completed");
             return RpcResultBuilder.success(sb.build()).buildFuture();
         }
         //selective return...
         for(String r : StatisticsTempData.OFNodesStatsCounters.keySet()){
             boolean found = false;
             if(input.getSwitchIds().contains(r.toString())){
+                LOG.info(StatisticsTempData.OFNodesStatsCounters.get(r).toString());
                 found = true;
                 OFNodeStatsCounters ns = StatisticsTempData.OFNodesStatsCounters.get(r);
                 dpStats.add(r.toString()+":"+ns.getCountSend()+":"+ns.getTsLastSend()+":"+ns.getCountReceived()+":"+ns.getTsLastReceived());
             }
             if(!found){
-                LOG.error(TAG, "Error while retieving the stats, switched IDs not found");
+                LOG.error("Error while retieving the stats, switched IDs not found");
                 GetSwitchStatsOutputBuilder sb = new GetSwitchStatsOutputBuilder();
                 sb.setResponseCode(-1L);
                 sb.setResponseMessage(new ArrayList<String>());
@@ -434,7 +442,7 @@ public class RolemanagerImpl implements BindingAwareProvider,
         GetSwitchStatsOutputBuilder sb = new GetSwitchStatsOutputBuilder();
         sb.setResponseCode(0L);
         sb.setResponseMessage(dpStats);
-        LOG.info(TAG, "Get switches stats completed");
+        LOG.info("Get switches stats completed");
         return RpcResultBuilder.success(sb.build()).buildFuture();
     }
 
